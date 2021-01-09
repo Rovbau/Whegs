@@ -20,8 +20,8 @@ class Scanner():
         self.vertical_direction = "DOWN"
         self.scan_data = []
 
-    def do_3D_scan(self, step = 1, min_heading = -90, max_heading = 90,
-                                   min_pitch = -1.8, max_pitch = 1.8):
+    def do_3D_scan(self, step = 1, min_heading = -10, max_heading = 10,
+                                   min_pitch = -9.0, max_pitch = 9.0):
         """Do a 3D Scan for maximal Stepper-Steps. INPUT: INT step, angle-limits""" 
         self.step = step
         
@@ -98,10 +98,10 @@ if __name__ == "__main__":
 
     start = time.time()
     
-    scanner.do_3D_scan(step = 180)
-    (scanner.get_scan_data())
+    scanner.do_3D_scan(step = 90)
     scanner.scanner_reset()
 
     print("Scan takes: " +str(time.time()-start) +" sec")
+    print(scanner.get_scan_data())
 
 

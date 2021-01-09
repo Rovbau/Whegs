@@ -1,7 +1,9 @@
 import RPi.GPIO as GPIO
+import datetime as dt
+from datetime import timedelta
 from time import sleep, time
 GPIO.setwarnings(False)
-#import datetime as dt
+
 
 class Stepper():
     """Controls a Stepper Motor with the Modul A4988"""
@@ -52,7 +54,7 @@ class Stepper():
             if (time() - self.last_step_time) > speed:
                 GPIO.output(self.pin_step, True)
             else:
-                sleep(speed) #sleep must be >0.01s because of acurency x.xx
+                sleep(0.01) #sleep must be >0.01s because of acurency x.xx
                 GPIO.output(self.pin_step, True)
             self.last_step_time = time()
         self.last_step_time = time()
