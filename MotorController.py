@@ -25,6 +25,8 @@ class MotorController():
 
     def set_motor(self, speed, direction):
         """Set the motor speed and direction via i2c"""
+        speed = 255 - speed * 255
+        if speed < 90: speed = 90
         if direction == 1:
             direction = 127
         elif direction == -1:
