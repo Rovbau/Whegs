@@ -12,8 +12,8 @@ class Motion():
     def __init__(self):
         self.em_stop = False
         self.motor_VL = MotorController(0x19)
-        self.motor_VR = MotorController(0x1A)
-        self.motor_HL = MotorController(0x1B)
+        self.motor_VR = MotorController(0x1B)
+        self.motor_HL = MotorController(0x1A)
         self.motor_HR = MotorController(0x1C)
 
         self.settings_VL = 0,0
@@ -55,9 +55,13 @@ class Motion():
             print("Error parsing speed Value")
 
         self.set_motorcontroller(self.motor_VL, self.settings_VL)
+        #sleep(0.1)
         self.set_motorcontroller(self.motor_VR, self.settings_VR)
+        #sleep(0.1)
         self.set_motorcontroller(self.motor_HL, self.settings_HL)
+        #sleep(0.1)
         self.set_motorcontroller(self.motor_HR, self.settings_HR)
+
 
     def set_motorcontroller(self, motor, settings):
         speed, direction = settings
@@ -81,29 +85,30 @@ if __name__ == "__main__":
     motion.set_motion(0,1)
     sleep(2)
     
-    print("Left")
-    motion.set_motion(0.4,1)
-    sleep(2)
-    print("Straigt")
-    motion.set_motion(0,1)
-    sleep(2)
-    print("Right")
-    motion.set_motion(-0.4,1)
-    sleep(2)
-    print("Straigt")
-    motion.set_motion(0,1)
-    sleep(2)
+##    print("Left")
+##    motion.set_motion(0.4,1)
+##    sleep(5)
+##    print("Straigt")
+##    motion.set_motion(0,1)
+##    sleep(5)
+##    print("Right")
+##    motion.set_motion(-0.4,1)
+##    sleep(5)
+##    print("Straigt")
+##    motion.set_motion(0,1)
+##    sleep(5)
     print("Hard Right")
     motion.set_motion(-0.6,1)
-    sleep(2)
+    sleep(3)
     print("Straigt")
     motion.set_motion(0,1)
-    sleep(2)
+    sleep(3)
     print("Hard Left")
     motion.set_motion(0.6,1)
+    sleep(3)
     print("Straigt")
     motion.set_motion(0,1)
-    sleep(2)
+    sleep(3)
     
 
 

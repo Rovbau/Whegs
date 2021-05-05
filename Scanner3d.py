@@ -76,7 +76,7 @@ class Scanner():
         while True:
             dist = self.lidar.get_distance()    # zero if LIDAR error
             print(dist)
-            sleep(2)
+            #sleep(2)
             self.local_data.append([self.pitch, self.heading, dist])
             
             if self.line_direction == "CCW":
@@ -122,17 +122,19 @@ class Scanner():
         
 if __name__ == "__main__":
     scanner = Scanner()
-
+    count = 0
     start = time.time()
     scanner.init_3D_scan(min_pitch = 10,    max_pitch = 15,
-                         min_heading = -5.4, max_heading = 5.4,)
-    scanner.do_3D_scan(6)
+                         min_heading = -25.4, max_heading = 25.4,)
+    scanner.do_3D_scan(60)
     print(scanner.get_scan_data())
     for i in scanner.get_scan_data():
             print(i)
+            if i == "Lidar not Write":
+                count += 1
     #scanner.do_3D_scan(2)
     #print(scanner.get_scan_data())
     print("Scan takes: " +str(time.time()-start) +" sec")
-    
+    print(count)
 
 

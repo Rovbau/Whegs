@@ -14,8 +14,9 @@ class MotorController():
         self.CountL = 0
         self.CountR = 0
         self.last_time = time()
+        self.direction_old = 1
         
-        print("Init MotorController")
+        print("Init MotorController " +str(self.addr))
 
     def bits_to_int(self, low, high):
         value = (high << 8) + low
@@ -26,7 +27,15 @@ class MotorController():
     def set_motor(self, speed, direction):
         """Set the motor speed and direction via i2c"""
         speed = 255 - speed * 255
-        if speed < 90: speed = 90
+
+        #if speed < 100: speed = 100      
+
+        if self.direction_old != direction:
+            self.direction_old = direction
+            print(str(self.addr )+ "Change Direction")
+            bus.write_byte_data(self.addr, int(direction), int(255))
+
+        print("motor" + str(speed) + " " + str(direction))
         if direction == 1:
             direction = 127
         elif direction == -1:

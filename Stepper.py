@@ -74,6 +74,7 @@ if __name__ == "__main__":
     stepper1 = Stepper("Heading", angle_per_step = 1.8, pin_dir = 35, pin_step = 37, actual=0)
     stepper1.set_actual_angle(45)
     stepper1.goto_angle(90)
+    stepper1.goto_angle(-90)
     
     print(stepper1.get_actual_angle())
 

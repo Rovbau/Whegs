@@ -81,7 +81,7 @@ if __name__ == "__main__":
   start = time.time()
   for  i in range(180):
     x = lidar.get_distance()
-    time.sleep(0.3) 
+    time.sleep(0.03) 
     print(x)
   stop = time.time()
   print(stop-start)

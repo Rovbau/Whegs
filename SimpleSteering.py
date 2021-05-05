@@ -4,6 +4,7 @@
 from threading import Thread
 from time import *
 import sys
+from Kompass import *
 #import msvcrt
 #import getch
 import smbus
@@ -13,7 +14,7 @@ class Manuell():
     def __init__(self):
         self.left = 255
         self.right = 255
-        self.step = 40
+        self.step = 50
         self.dir_left = 128
         self.dir_right = 128
         print("Init Manuell")
@@ -72,6 +73,7 @@ class Manuell():
 if __name__ == "__main__":
 
     man = Manuell()
+    kompass = Kompass()
 
     ThreadEncoder=Thread(target=man.runManuell,args=())
     ThreadEncoder.daemon=True
@@ -81,6 +83,16 @@ if __name__ == "__main__":
         left, right, dir_left, dir_right = man.getManuellCommand()
         print ("Left: " +str(left) + " Right: " +str(right) +
                "    Dir_L: " + str(dir_left) + " Dir_R: " + str(dir_right))
+
+        pitch = kompass.get_pitch()
+        roll = kompass.get_roll()
+        heading = kompass.get_heading()
+        print("Pitch is: " + str(pitch))
+        print("Roll is: " + str(roll))
+        print("Heading is: " + str(heading))
+        if abs(pitch) > 10 or abs(roll) > 10:
+            left = 255
+            right = 255
         bus.write_byte_data(0x19, dir_left, left)
         bus.write_byte_data(0x1A, dir_left, left)
         bus.write_byte_data(0x1B, dir_right, right)
@@ -89,6 +101,6 @@ if __name__ == "__main__":
         print(bus.read_byte_data(0x19,0x06))
              
 #  bus.write_byte_data(0x1C, dir_right, right)
-        sleep(1)
+        sleep(3)
 
 
