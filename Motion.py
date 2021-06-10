@@ -20,33 +20,36 @@ class Motion():
         self.settings_VR = 0,0
         self.settings_HL = 0,0
         self.settings_HR = 0,0
+
+        self.speed = 0
     
     def set_motion(self, steer, speed):
         """Set the 4 Motors speed and direction according steer, speed values"""
         steer = max(min(1.0,steer), -1.0)
-        speed = max(min(1.0,speed), -1.0)
-
-        if abs(steer) < 0.1:
-            self.settings_VL = 0, 1
-            self.settings_VR = 0, 1
-            self.settings_HL = 0, 1
-            self.settings_HR = 0, 1          
-        elif steer > 0 and steer < 0.5:    
+        self.speed = max(min(1.0,speed), -1.0)
+        
+        if abs(steer) < 0.1:        #Settings_xy is Motorspeed, direction
+            self.settings_VL = 1, 1
+            self.settings_VR = 1, 1
+            self.settings_HL = 1, 1
+            self.settings_HR = 1, 1
+            print("HEre")
+        elif steer > 0 and steer < 0.7:    
             self.settings_VL = 1 - steer, 1
             self.settings_VR = 1, 1
             self.settings_HL = 1 - steer, 1
             self.settings_HR = 1, 1
-        elif steer >= 0.5:
+        elif steer >= 0.7:
             self.settings_VL = 1, -1
             self.settings_VR = 1, 1
             self.settings_HL = 1, -1
             self.settings_HR = 1, 1 
-        elif steer < 0 and steer > -0.5:    
+        elif steer < 0 and steer > -0.7:    
             self.settings_VL = 1, 1
             self.settings_VR = 1 - abs(steer) , 1
             self.settings_HL = 1, 1
             self.settings_HR = 1 - abs(steer), 1
-        elif steer <= -0.5:
+        elif steer <= -0.7:
             self.settings_VL = 1, 1
             self.settings_VR = 1, -1
             self.settings_HL = 1, 1
@@ -55,16 +58,17 @@ class Motion():
             print("Error parsing speed Value")
 
         self.set_motorcontroller(self.motor_VL, self.settings_VL)
-        #sleep(0.1)
         self.set_motorcontroller(self.motor_VR, self.settings_VR)
-        #sleep(0.1)
         self.set_motorcontroller(self.motor_HL, self.settings_HL)
-        #sleep(0.1)
         self.set_motorcontroller(self.motor_HR, self.settings_HR)
 
 
     def set_motorcontroller(self, motor, settings):
         speed, direction = settings
+        speed = speed  * self.speed
+        if speed < 0:
+            direction = direction * (-1)
+        print("The Speed : " + str(speed))
         motor.set_motor(speed, direction)
 
     def stop(self, em_stop):
@@ -81,34 +85,30 @@ if __name__ == "__main__":
 
     motion  = Motion()
 
-    print("Straigt")
+
+    for i in range(10):
+        print("Setting is: " + str(i / 10))
+        motion.set_motion(i / 10 , 0.5)
+        print()
+        sleep(1)
+
     motion.set_motion(0,1)
-    sleep(2)
-    
-##    print("Left")
-##    motion.set_motion(0.4,1)
-##    sleep(5)
+
 ##    print("Straigt")
 ##    motion.set_motion(0,1)
-##    sleep(5)
-##    print("Right")
-##    motion.set_motion(-0.4,1)
-##    sleep(5)
+##    sleep(3)
+##    print("Hard Right")
+##    motion.set_motion(-0.6,1)
+##    sleep(3)
 ##    print("Straigt")
 ##    motion.set_motion(0,1)
-##    sleep(5)
-    print("Hard Right")
-    motion.set_motion(-0.6,1)
-    sleep(3)
-    print("Straigt")
-    motion.set_motion(0,1)
-    sleep(3)
-    print("Hard Left")
-    motion.set_motion(0.6,1)
-    sleep(3)
-    print("Straigt")
-    motion.set_motion(0,1)
-    sleep(3)
+##    sleep(3)
+##    print("Hard Left")
+##    motion.set_motion(0.6,1)
+##    sleep(3)
+##    print("Straigt")
+##    motion.set_motion(0,1)
+##    sleep(3)
     
 
 

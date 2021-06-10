@@ -35,7 +35,7 @@ class MotorController():
             print(str(self.addr )+ "Change Direction")
             bus.write_byte_data(self.addr, int(direction), int(255))
 
-        print("motor" + str(speed) + " " + str(direction))
+        print("motor " + str(speed) + " " + str(direction))
         if direction == 1:
             direction = 127
         elif direction == -1:
