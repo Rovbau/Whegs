@@ -26,16 +26,13 @@ class MotorController():
 
     def set_motor(self, speed, direction):
         """Set the motor speed and direction via i2c"""
-        speed = 255 - speed * 255
+        speed = 255 - abs(speed) * 255
 
-        #if speed < 100: speed = 100      
-
+        #Set Motor to Stop before direction change
         if self.direction_old != direction:
             self.direction_old = direction
-            print(str(self.addr )+ "Change Direction")
             bus.write_byte_data(self.addr, int(direction), int(255))
 
-        print("motor " + str(speed) + " " + str(direction))
         if direction == 1:
             direction = 127
         elif direction == -1:
@@ -74,7 +71,7 @@ class MotorController():
         try:
             low = bus.read_byte_data(self.addr,0x03)
             high = bus.read_byte_data(self.addr,0x04)
-            overcurrent_value = self.bits_to_int(low, high)       
+            overcurrent_value = self.bits_to_int(low, high) # 1 == NO over_current
         except:
             overcurrent_value = 0
             print("Overcurrent " +str(self.addr) + " not ready")

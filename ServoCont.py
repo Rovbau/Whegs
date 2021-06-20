@@ -6,8 +6,6 @@ from time import sleep
 import smbus
 bus = smbus.SMBus(1)
 
-
-
 class Servo():
     def __init__(self, servo_corr1 = 35, servo_corr2 = 35):
         self.addr_pic = 0x18
@@ -27,11 +25,11 @@ class Servo():
 if __name__ == "__main__":
 
     servo = Servo()
-    servo.set_servo_angle(0,0)
+    servo.set_servo_angle(0)
     sleep(5)
     
-    servo.set_servo_angle(1,1)
+    servo.set_servo_angle(1)
     sleep(5)
-    servo.set_servo_angle(2,2)
+    servo.set_servo_angle(2)
     sleep(5)
-    servo.set_servo_angle(3,3)
+    servo.set_servo_angle(3)

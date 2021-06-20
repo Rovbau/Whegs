@@ -5,7 +5,6 @@
 # Speed Vor = +1 Retour = -1
 
 from MotorController import *
-#from Manuell import *
 from time import *
 
 class Motion():
@@ -28,12 +27,11 @@ class Motion():
         steer = max(min(1.0,steer), -1.0)
         self.speed = max(min(1.0,speed), -1.0)
         
-        if abs(steer) < 0.1:        #Settings_xy is Motorspeed, direction
+        if abs(steer) < 0.1:        #settings_xy is motorspeed, direction
             self.settings_VL = 1, 1
             self.settings_VR = 1, 1
             self.settings_HL = 1, 1
             self.settings_HR = 1, 1
-            print("HEre")
         elif steer > 0 and steer < 0.7:    
             self.settings_VL = 1 - steer, 1
             self.settings_VR = 1, 1
@@ -68,7 +66,6 @@ class Motion():
         speed = speed  * self.speed
         if speed < 0:
             direction = direction * (-1)
-        print("The Speed : " + str(speed))
         motor.set_motor(speed, direction)
 
     def stop(self, em_stop):

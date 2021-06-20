@@ -12,19 +12,26 @@ class Kompass():
     def __init__ (self):
         self.adresse = 0x61
 
+    def read_byte(self, register):
+        for i in range(2):
+            try:
+                data = bus.read_byte_data(self.adresse,register)
+                break
+            except:
+                print("Kompass not ready")
+                data = None
+        return(data)
+
     def get_pitch(self):
-        try:
-            data = bus.read_byte_data(self.adresse,0x04)
-        except:
-            print("Kompass not ready")
-            return(None)
+        data = self.read_byte(0x04)
+
         if data > 127:
             data = (255 - data) * (-1)
         return(data)
 
     def get_roll(self):
         try:
-            data = bus.read_byte_data(self.adresse,0x05)
+            data = self.read_byte(0x05)
         except:
             print("Kompass not ready")
             return(None)
@@ -35,15 +42,13 @@ class Kompass():
     def get_heading(self):
         """Returns KompassKurs"""
         kurs = 0
-        #try:
-        daten1 = bus.read_byte_data(self.adresse,0x02)
-        daten2 = bus.read_byte_data(self.adresse,0x03)
-        #except:
-         #   print("Kompass not ready")
-          #  return(None)
+
+        daten1 = self.read_byte(0x02)
+        daten2 = self.read_byte(0x03)
+
         kurs = (daten1<<8) + daten2
         kurs = kurs/10
-        kurs = 360 - kurs
+        kurs = int(360 - kurs)
         return(kurs)
 
 if __name__ == "__main__":

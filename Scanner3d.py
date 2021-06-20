@@ -36,7 +36,7 @@ class Scanner():
         
         self.stepper_heading.set_actual_angle(self.min_heading)
         self.heading = self.min_heading
-
+        self.min_dist = 999
         #Stabilise
         sleep(0.2)
         self.init_done = True
@@ -46,6 +46,8 @@ class Scanner():
         """Do a 3D Scan for maximal Stepper-Steps. INPUT: INT step, angle-limits"""
         if not self.init_done:
             print("Scanner3d Init nessesary!")
+
+        self.min_dist = 999
 
         while True:
             if self.actual_steps >= step:
@@ -75,8 +77,9 @@ class Scanner():
 
         while True:
             dist = self.lidar.get_distance()    # zero if LIDAR error
-            print(dist)
-            sleep(0.02)
+
+            if dist < self.min_dist and dist > 1:
+                self.min_dist = dist
             self.local_data.append([self.pitch, self.heading, dist])
             
             if self.line_direction == "CCW":
@@ -104,6 +107,9 @@ class Scanner():
         dy=int((dist*sin(radians(winkel))))
         return(dx,dy)
 
+    def get_min_dist(self):
+        return(self.min_dist)
+
     def get_scan_data(self):
         """RETURNS: LIST scan_data[pitch, heading, distance], clears data after"""
         data = self.scan_data
@@ -125,16 +131,14 @@ if __name__ == "__main__":
 
     start = time.time()
     scanner.init_3D_scan(min_pitch = 10,    max_pitch = 15,
-                         min_heading = -45.0, max_heading = 45.0,)
-    scanner.do_3D_scan(6)
-    #print(scanner.get_scan_data())
-    #for i in scanner.get_scan_data():
-            #print(i)
-     #       if i == "Lidar not Write":
-      #          count += 1
-    #scanner.do_3D_scan(2)
-    #print(scanner.get_scan_data())
+                         min_heading = -15.0, max_heading = 15.0,)
+    scanner.do_3D_scan(1)
+    print(scanner.get_scan_data())
+
+    scanner.do_3D_scan(1)
+    print(scanner.get_scan_data())
+
     print("Scan takes: " +str(time.time()-start) +" sec")
-    print(count)
+
 
 

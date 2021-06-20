@@ -31,18 +31,24 @@ class Lidar():
       return -1
 
   def writeAndWait(self, register, value):
-    try:
-      self.bus.write_byte_data(self.address, register, value);
-    except:
-      print("Lidar not Write")
-      return (-1)
+    for i in range(2):
+      try:
+        self.bus.write_byte_data(self.address, register, value)
+        break
+      except:
+        print("Lidar not Write")
+        return (-1)
+    return(1)
     
   def readAndWait(self, register):
-    try:
-        res = self.bus.read_byte_data(self.address, register)
-    except:
-        res = 0
-    return res
+    for i in range(2):
+      try:
+        data = self.bus.read_byte_data(self.address, register)
+        break
+      except:
+        data = 0
+        print("Lidar not Reading")
+    return (data)
 
   def get_distance(self):
     """Read Lidar distance [cm], Waits for BusyFlag = low""" 
@@ -57,7 +63,7 @@ class Lidar():
     dist2 = self.readAndWait(self.distReadReg2)
     #For max Speed: add the Dist-READ command here
     if count > 5:
-      pass #print("Waiting")
+      pass 
     count = 0
     return (dist1 << 8) + dist2
 

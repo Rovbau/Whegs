@@ -23,11 +23,13 @@ class SMBUSBatt():
         self.bus.write_byte_data(self.address, register, value);
 
     def read_word(self, register):
-        try:
-            data = self.bus.read_word_data(self.address, register)
-        except:
-            data = None
-        return data
+        for i in range(2):
+            try:
+                data = self.bus.read_word_data(self.address, register)
+                break
+            except:
+                data = None
+        return (data)
 
     def get_voltage(self):
         """Returns Voltage in mV"""
@@ -75,8 +77,8 @@ if __name__ == "__main__":
         print("Empty in:" + str(batt.get_time_to_empty()))
         print("Full in: " + str(batt.get_time_to_full()))
         print("OS Time: " + str(time.asctime()))
-        time.sleep(5)
-        if str(batt.get_relative_charge()) > "80":
+        time.sleep(0.5)
+        if str(batt.get_relative_charge()) > "90":
             print('\a')
 
 
