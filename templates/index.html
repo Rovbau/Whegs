@@ -1,0 +1,29 @@
+<!Doctype html>
+<html>
+  <head>
+        <title>Whegs Control</title>
+        <style type="text/css">
+            .container {
+                display: flex;
+            }
+
+            .control iframe {
+                height: 32px;
+            }
+
+            .status iframe {
+                height: 500px;
+            }
+        </style>
+  </head>
+
+  <body>
+      <div class="container">
+          <div class="left-container">
+              <div class="stream"><img src="/stream"></div>
+              <div class="control"><iframe src="control" frameborder="0"></iframe></div>
+          </div>
+          <div class="status"><iframe src="status" frameborder="0"></iframe></div>
+      </div>
+  </body>
+</html>
