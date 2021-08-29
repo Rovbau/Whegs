@@ -3,9 +3,13 @@
 from Whegs import Whegs
 from threading import Thread
 from flask import Flask, request, redirect, render_template
+import atexit
+import logging
 
 app = Flask(__name__)
 whegs = Whegs()
+logging.basicConfig(level=logging.ERROR, format='\n%(asctime)s %(message)s', filename='ExeptionLog.log')
+logging.getLogger().addHandler(logging.StreamHandler())
 
 @app.route('/')
 def api_index():
@@ -34,12 +38,15 @@ def run_api_server():
     app.run()
 
 def main():
-    api_server_thread = Thread(target=run_api_server, daemon=True)
-    api_server_thread.start()
-
-    whegs.init()
-    whegs.run()
-
+    try:
+        api_server_thread = Thread(target=run_api_server, daemon=True)
+        api_server_thread.start()
+        
+        whegs.init()
+        whegs.run()
+    except Exception as e:
+        logging.exception("Main-Loop Failed:")
+    
 
 if __name__ == '__main__':
     main()

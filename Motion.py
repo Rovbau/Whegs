@@ -61,6 +61,7 @@ class Motion():
         self.set_motorcontroller(self.motor_HR, self.settings_HR)
 
 
+
     def set_motorcontroller(self, motor, settings):
         speed, direction = settings
         speed = speed  * self.speed
