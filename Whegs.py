@@ -4,6 +4,7 @@ from Kompass import *
 from SMBUSBatt import *
 from Scanner3d import *
 from threading import Thread
+from Karte import *
 import atexit
 
 
@@ -16,6 +17,7 @@ class Whegs:
         self.kompass = Kompass()
         self.batterie = SMBUSBatt()
         self.scanner = Scanner()
+        self.karte = Karte()
         self.last_action = None
         self.distance = None
         self.ThreadEncoder = None
@@ -49,6 +51,15 @@ class Whegs:
         while True:
             steer, speed = self.man.getManuellCommand()
 
+            heading = self.kompass.get_heading()
+            print("Heading: " +str(heading))
+            deltaL = self.motion.motor_VL.get_counts() * (-1)
+            print(deltaL)
+            deltaR = self.motion.motor_VR.get_counts()
+            print(deltaR)
+            self.karte.updateRoboPos(deltaL, deltaR, heading)
+            print(self.karte.getRoboPos())
+
             if self.last_action == "stop":
                 print("stopping")
                 steer = 0
@@ -66,10 +77,7 @@ class Whegs:
                 steer = 0
                 speed = 0.5
             else:
-                steer = 0
-                speed = 0
-                print("Can't get control action")
-
+                steer, speed = self.man.getManuellCommand()
 
 
             if steer == 0 and speed == 0:

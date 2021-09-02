@@ -45,6 +45,7 @@ class SMBUSBatt():
             value = 65635 - value
         except:
             print ("stoerung")
+            value = 0
         return (value)
     
     def get_relative_charge(self):

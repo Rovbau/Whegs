@@ -6,6 +6,8 @@ from Stepper import *
 from Lidar import *
 from ServoCont import *
 from math import *
+import subprocess
+import pickle
 
 class Scanner():
     def __init__(self):
@@ -128,15 +130,18 @@ class Scanner():
         
 if __name__ == "__main__":
     scanner = Scanner()
-
+    
     start = time.time()
-    scanner.init_3D_scan(min_pitch = 10,    max_pitch = 15,
+    scanner.init_3D_scan(min_pitch = 0,    max_pitch = 18,
                          min_heading = -45.0, max_heading = 45.0,)
-    scanner.do_3D_scan(1)
-    print(scanner.get_scan_data())
+    scanner.do_3D_scan(10)
+    
+    scan_data = scanner.get_scan_data()
+    print(scan_data)
 
-    scanner.do_3D_scan(1)
-    print(scanner.get_scan_data())
+ #   filename = input("Filename for Scan: ")
+  #  pickle.dump(scan_data, open("./Scans/lidar_scan_" + filename + ".p", "wb"))
+   # subprocess.call("raspistill -o /Scans/" + filename + ".jpg", shell=True)
 
     print("Scan takes: " +str(time.time()-start) +" sec")
 

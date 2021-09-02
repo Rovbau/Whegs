@@ -7,7 +7,7 @@ import smbus
 bus = smbus.SMBus(1)
 
 class Servo():
-    def __init__(self, servo_corr1 = 35, servo_corr2 = 35):
+    def __init__(self, servo_corr1 = 39, servo_corr2 = 35):
         self.addr_pic = 0x18
         self.servo_corr1 = servo_corr1
         self.servo_corr2 = servo_corr2
