@@ -54,11 +54,11 @@ class Kompass():
 if __name__ == "__main__":
 
     kompass = Kompass()
+    print("Starte")
 
     while True:
-        print("Starte")
-        print(kompass.get_heading())
-        print(kompass.get_pitch())
-        print(kompass.get_roll())
+        print("Heading: " +str(kompass.get_heading()))
+        print("Pitch: "   +str(kompass.get_pitch()))
+        print("Roll: "    +str(kompass.get_roll()))
         sleep(1)
 

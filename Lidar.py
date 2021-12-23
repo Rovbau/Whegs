@@ -13,6 +13,7 @@ class Lidar():
     self.velReadReg = 0x09
     self.status = 0x01
     self.connect(1)
+    self.error_count = 0
     #Fast scan:
     #Maximun Acqusition count (Default is 0x80)
     #self.bus.write_byte_data(self.address, 0x02, 0x0d)
@@ -34,9 +35,11 @@ class Lidar():
     for i in range(2):
       try:
         self.bus.write_byte_data(self.address, register, value)
+        self.error_count = 0
         break
       except:
-        print("Lidar not Write")
+        self.error_count += 1
+        #print("Lidar not Write")
         return (-1)
     return(1)
     
@@ -44,10 +47,12 @@ class Lidar():
     for i in range(2):
       try:
         data = self.bus.read_byte_data(self.address, register)
+        self.error_count = 0
         break
       except:
         data = 0
-        print("Lidar not Reading")
+        self.error_count += 1
+        #print("Lidar not Reading")
     return (data)
 
   def get_distance(self):
@@ -65,6 +70,8 @@ class Lidar():
     if count > 5:
       pass 
     count = 0
+    if self.error_count >= 10:
+      print("Lidar Errors")
     return (dist1 << 8) + dist2
 
   def get_velocity(self):
@@ -87,7 +94,7 @@ if __name__ == "__main__":
   start = time.time()
   for  i in range(180):
     x = lidar.get_distance()
-    time.sleep(0.03) 
+    time.sleep(0.53) 
     print(x)
   stop = time.time()
   print(stop-start)

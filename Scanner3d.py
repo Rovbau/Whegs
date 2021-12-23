@@ -36,7 +36,8 @@ class Scanner():
         self.servo_pitch.set_servo_angle(self.min_pitch)
         self.pitch = self.min_pitch
         
-        self.stepper_heading.set_actual_angle(self.min_heading)
+        self.stepper_heading.set_actual_angle(0)
+        self.stepper_heading.goto_angle(self.min_heading)
         self.heading = self.min_heading
         self.min_dist = 999
         #Stabilise
@@ -120,8 +121,8 @@ class Scanner():
 
     def scanner_reset(self):
         """Move Steppers to init Pos. resets heading, pitch"""
-        self.stepper_heading.do_step(int((-1) * self.heading / 1.8 ))
-        self.servo_pitch.do_step  (int((-1) * self.pitch / 1.8 ))
+        self.stepper_heading.goto_angle(0)
+        self.servo_pitch.set_servo_angle(0)
         self.heading = 0
         self.pitch = 0
         self.line_direction = "CCW"
@@ -132,16 +133,16 @@ if __name__ == "__main__":
     scanner = Scanner()
     
     start = time.time()
-    scanner.init_3D_scan(min_pitch = 0,    max_pitch = 18,
+    scanner.init_3D_scan(min_pitch = -10,    max_pitch = -10,
                          min_heading = -45.0, max_heading = 45.0,)
-    scanner.do_3D_scan(10)
-    
+    scanner.do_3D_scan(1)
     scan_data = scanner.get_scan_data()
+    scanner.scanner_reset()
     print(scan_data)
 
- #   filename = input("Filename for Scan: ")
-  #  pickle.dump(scan_data, open("./Scans/lidar_scan_" + filename + ".p", "wb"))
-   # subprocess.call("raspistill -o /Scans/" + filename + ".jpg", shell=True)
+    #filename = input("Filename for Scan: ")
+    #pickle.dump(scan_data, open("./Scans/lidar_scan_" + filename + ".p", "wb"))
+    #subprocess.call("raspistill -o /Scans/" + filename + ".jpg", shell=True)
 
     print("Scan takes: " +str(time.time()-start) +" sec")
 

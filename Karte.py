@@ -16,10 +16,15 @@ class Karte():
         self.global_kurs= 0
         self.kompassOld=0
         self.timeold=0
+        self.obstacles_local_xy = []
 
     def updateObstacles(self, obstacles):
         """Obstacles werden in Karte eingetragen"""
-        global_obs = self.calcGlobalObstaclePosition(obstacles)
+        obstacles = obstacles[0]
+        for element in obstacles:
+            dx, dy = self.polar_to_kartesian(element[2], element[1])
+            self.obstacles_local_xy.append([dx, dy])
+        global_obs = self.calcGlobalObstaclePosition(self.obstacles_local_xy)
         self.globalObstaclesList.extend(global_obs)
     
     def updateHardObstacles(self):
@@ -63,7 +68,7 @@ class Karte():
             self.global_kurs=360-abs(self.global_kurs)            
         global_kurs_radiant=radians(self.global_kurs)
         #Uncomment following if you use Compass
-        global_kurs_radiant = radians(KompassCourse)
+        ##global_kurs_radiant = radians(KompassCourse)
         self.global_kurs = degrees(global_kurs_radiant)
         #global_kurs_radiant=0
         #self.global_kurs=KompassCourse                           
@@ -88,6 +93,12 @@ class Karte():
     def drehmatrix(self,dx,dy):
         self.RoboPosX=self.RoboPosX+dx
         self.RoboPosY=self.RoboPosY+dy
+
+    def polar_to_kartesian(self, dist, winkel):
+        """returns aus Dist und Winkel Dx,Dy"""
+        dx=int((dist*cos(radians(winkel))))
+        dy=int((dist*sin(radians(winkel))))
+        return(dx,dy)
         
     def saveRoboPath(self):
         """Pickel Robos Path every Xsec."""
@@ -101,8 +112,8 @@ class Karte():
 
     def setRoboPos(self,x,y):
         """Set Robo Position zb bei Start"""
-        self.RoboPosX=x
-        self.RoboPosY=y
+        self.RoboPosX = int(x)
+        self.RoboPosY = int(y)
     
     def getRoboPath(self):
         """returns RoboPath X,Y"""
