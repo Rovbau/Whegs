@@ -6,7 +6,7 @@ from math import sqrt, exp, pi, degrees, radians, atan2, atan, cos
 class Avoid():
     def __init__(self):
         self.TRESHOLD = 0.2
-        self.MAX_OBST_OBSERV = 200
+        self.MAX_OBST_OBSERV = 100
         self.obst_fifo = []
         self.colision_obst = []
         self.avoided_obstacles = []
@@ -44,13 +44,13 @@ class Avoid():
 
     def colision_analysis(self, obstacles):
         """return list of obstacles[x,y,kurs_diff] witch are in +/- SCAN_ANGLE"""
-        SCAN_ANGLE = 50
+        SCAN_ANGLE = 30
         self.colision_obst = []
         for obstacle in obstacles:
             kurs_to_obst = self.direction(self.robo_pos_x, self.robo_pos_y, obstacle[0], obstacle[1])
             kurs_diff = self.angle_diff(self.pose, kurs_to_obst)
             if  abs(kurs_diff) < SCAN_ANGLE:
-                self.colision_obst.append([obstacle[0], obstacle[1], kurs_diff])
+                self.colision_obst.append([obstacle[0], obstacle[1], int(kurs_diff)])
         return (self.colision_obst)
 
     def direction(self, x1, y1, x2, y2):

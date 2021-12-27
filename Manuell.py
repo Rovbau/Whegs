@@ -26,10 +26,10 @@ class Manuell():
             if comm == "8":
                 speed=1.0
                 steer=0.0
-            elif comm == "6":
+            elif comm == "4":
                 speed=1.0
                 steer=-1.0
-            elif comm == "4":
+            elif comm == "6":
                 speed=1.0
                 steer=1.0
             elif comm == "0":
@@ -47,6 +47,9 @@ class Manuell():
             elif comm == "9":
                 speed= 1.0
                 steer= 0.6
+            elif comm == "P":
+                steer = 10
+                speed = 10
             else:
                 speed=0.0
                 steer=0.0

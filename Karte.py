@@ -20,7 +20,8 @@ class Karte():
 
     def updateObstacles(self, obstacles):
         """Obstacles werden in Karte eingetragen"""
-        obstacles = obstacles[0]
+        self.obstacles_local_xy = []
+        obstacles = obstacles[-1]
         for element in obstacles:
             dx, dy = self.polar_to_kartesian(element[2], element[1])
             self.obstacles_local_xy.append([dx, dy])
@@ -67,11 +68,10 @@ class Karte():
         if self.global_kurs<0:
             self.global_kurs=360-abs(self.global_kurs)            
         global_kurs_radiant=radians(self.global_kurs)
-        #Uncomment following if you use Compass
-        ##global_kurs_radiant = radians(KompassCourse)
+        ## Uncomment following two, if you use Compass ##
+        global_kurs_radiant = radians(KompassCourse)
         self.global_kurs = degrees(global_kurs_radiant)
-        #global_kurs_radiant=0
-        #self.global_kurs=KompassCourse                           
+                         
 
         if deltaL != deltaR:
             da=(deltaR-deltaL)/Radstand     #Drehwinkel in  [rad]
@@ -137,20 +137,25 @@ if __name__ == "__main__":
 
     karte=Karte()
     
-    Obstacles=[[60,60],[50,50],[0,130],[0,140]]
+    Obstacles=[[[0,-45,100],[0,90,150]]]
 
     karte.updateObstacles(Obstacles)
-    #print(karte.getObstacles())
+    print(karte.getObstacles())
 
     deltaL=50
-    deltaR=0
-    KompassCourse=0
+    deltaR=50
+    KompassCourse=180
     karte.updateRoboPos(deltaL,deltaR,KompassCourse)
     print(karte.getRoboPos())
+
+    Obstacles=[[[0,-45,100],[0,90,150]]]
+
+    karte.updateObstacles(Obstacles)
+    print(karte.getObstacles())
     
     deltaL=660
     deltaR=660
-    KompassCourse=0
+    KompassCourse=90
     karte.updateRoboPos(deltaL,deltaR,KompassCourse)  
     print(karte.getRoboPos())
     

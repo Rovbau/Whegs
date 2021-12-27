@@ -31,8 +31,10 @@ class MotorController():
         #Set Motor to Stop before direction change
         if self.direction_old != direction:
             self.direction_old = direction
-            bus.write_byte_data(self.addr, int(direction), int(255))
-
+            try:
+                bus.write_byte_data(self.addr, int(direction), int(255))
+            except:
+                print("Motor " + str(self.addr) + "not ready")
         if direction == 1:
             direction = 127
         elif direction == -1:

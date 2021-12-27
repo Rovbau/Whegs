@@ -33,25 +33,25 @@ class Motion():
             self.settings_HL = 1, 1
             self.settings_HR = 1, 1
         elif steer > 0 and steer < 0.7:    
-            self.settings_VL = 1 - steer, 1
-            self.settings_VR = 1, 1
-            self.settings_HL = 1 - steer, 1
-            self.settings_HR = 1, 1
-        elif steer >= 0.7:
-            self.settings_VL = 1, -1
-            self.settings_VR = 1, 1
-            self.settings_HL = 1, -1
-            self.settings_HR = 1, 1 
-        elif steer < 0 and steer > -0.7:    
             self.settings_VL = 1, 1
-            self.settings_VR = 1 - abs(steer) , 1
+            self.settings_VR = 1 - steer, 1
             self.settings_HL = 1, 1
-            self.settings_HR = 1 - abs(steer), 1
-        elif steer <= -0.7:
+            self.settings_HR = 1 - steer, 1
+        elif steer >= 0.7:
             self.settings_VL = 1, 1
             self.settings_VR = 1, -1
             self.settings_HL = 1, 1
-            self.settings_HR = 1, -1
+            self.settings_HR = 1, -1 
+        elif steer < 0 and steer > -0.7:    
+            self.settings_VL = 1 - abs(steer), 1
+            self.settings_VR = 1, 1
+            self.settings_HL = 1 - abs(steer), 1 
+            self.settings_HR = 1, 1
+        elif steer <= -0.7:
+            self.settings_VL = 1, -1
+            self.settings_VR = 1, 1
+            self.settings_HL = 1, -1
+            self.settings_HR = 1, 1
         else:
             print("Error parsing speed Value")
 

@@ -5,8 +5,11 @@ from Avoid import *
 from Planer import *
 from SMBUSBatt import *
 from Scanner3d import *
+from Pumper import *
 from threading import Thread
 from Karte import *
+import os
+from VisualisationScan import *
 import atexit
 
 class Whegs:
@@ -19,6 +22,8 @@ class Whegs:
         self.karte = Karte()
         self.avoid = Avoid()
         self.planer = Planer(self.avoid, self.karte)
+        self.pumper = Pumper()
+        self.visualisationScan = VisualisationScan()
         self.last_action = None
         self.distance = None
         self.ThreadEncoder = None
@@ -29,7 +34,7 @@ class Whegs:
     def init(self):
         self.start = time.time()
         self.scanner.init_3D_scan(min_pitch = 0,    max_pitch = 0,
-                         min_heading = -45.0, max_heading = 45.0,)
+                         min_heading = -35.0, max_heading = 35.0,)
         self.ThreadEncoder = Thread(target=self.man.runManuell, args=(), daemon=True)
         self.ThreadEncoder.start()
 
@@ -50,15 +55,21 @@ class Whegs:
         motion_error = False
 
         while True:
+            self.pumper.status_led("on")
             steer, speed = self.man.getManuellCommand()
+
+            while steer == 10 and speed == 10:
+                self.motion.set_motion(0,0)
+                steer, speed = self.man.getManuellCommand()
+                sleep(1)
+
 
             heading = self.kompass.get_heading()
             deltaL = self.motion.motor_VL.get_counts() * (-1)
             deltaR = self.motion.motor_VR.get_counts()
             self.karte.updateRoboPos(deltaL, deltaR, heading)
             x, y, pose = self.karte.getRoboPos()
-            print("Position: "+ str(x) + " "+ str(y) + " " + str(pose))
-
+            
             if self.last_action == "stop":
                 steer = 0
                 speed = 0
@@ -80,7 +91,7 @@ class Whegs:
             if steer == 0 and speed == 0:
                 motion_error = False
             
-            if abs(self.kompass.get_pitch()) > 45 or abs(self.kompass.get_roll()) > 45:
+            if abs(self.kompass.get_pitch()) > 40 or abs(self.kompass.get_roll()) > 40:
                 steer = 0
                 speed = 0
                 motion_error = True
@@ -89,35 +100,41 @@ class Whegs:
             if self.batterie.get_relative_charge() < 30:
                 print("BATTERIE empty")
                          
-            if (self.batterie.get_current() > 5000 and self.batterie.get_current() < 60000 )or motion_error == True:
+            if (self.batterie.get_current() > 5000) or motion_error == True:
                 steer = 0
                 speed = 0
                 motion_error = True
                 print("CURRENT Error Stopping")
 
+            if self.scanner.get_min_dist() < 60:
+                #print("Collision WARNING")
+                #print(self.scanner.get_min_dist())
+                #steer = -1
+                self.distance = "TO NARROW MOVE BACKWARTS !"
+            else:
+                self.distance = None
 
-            self.scanner.do_3D_scan(1)
-
-
+            self.scanner.do_3D_scan(1)         
             scan_data = self.scanner.get_scan_data()
+            #print(scan_data)
 
             self.karte.updateObstacles(scan_data)
             obstacles = self.karte.getObstacles()
-            
+            #print(obstacles)
+
+            self.visualisationScan.draw_scan(obstacles, [x, y, pose] )
+         
             avoid_steering, max_left, max_right = self.avoid.get_nearest_obst(x, y, pose, obstacles)
-            print("Go")
             steering_output, speed = self.planer.set_modus(x, y, pose, steer, speed, avoid_steering, max_left, max_right, False)
-            print(steering_output)
-            steer = steering_output
+            steer = steering_output * 0.5
 
-            #if self.scanner.get_min_dist() < 90:
-            #    print("Collision WARNING")
-            #    print(self.scanner.get_min_dist())
-            #    steer = -1
-            #    self.distance = "TO NARROW MOVE BACKWARTS !"
-            #else:
-            #    self.distance = None
+            print("Avoid_Steering: " + str(avoid_steering))
+            print("Steering_Output: " + str(steering_output) + "  max_left: " + str(max_left) + "  max_right: " + str(max_right))
+            print("Avoid_Obst: " +str(self.avoid.avoided_obst()))
+            print("Position: "+ str(x) + " "+ str(y) + " " + str(pose))
+            print("Steer: " +str(steer))
 
-            self.motion.set_motion(steer , speed*0.7)
-                
-            sleep(0.5)
+            self.motion.set_motion(steer  , speed*0.3)
+            self.pumper.status_led("off")
+            sleep(0.2)
+            #os.system('clear')

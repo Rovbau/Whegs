@@ -28,7 +28,7 @@ class SMBUSBatt():
                 data = self.bus.read_word_data(self.address, register)
                 break
             except:
-                data = None
+                data = -1
         return (data)
 
     def get_voltage(self):
