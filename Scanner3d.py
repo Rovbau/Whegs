@@ -11,7 +11,7 @@ import pickle
 
 class Scanner():
     def __init__(self):
-        self.heading_step_size = 1.8
+        self.heading_step_size = 1.8 / 2
         self.pitch_step_size = 2.0
         self.stepper_heading = Stepper("Heading", angle_per_step = self.heading_step_size,
                                         pin_dir = 35, pin_step = 37, actual=0)
@@ -81,7 +81,8 @@ class Scanner():
         while True:
             dist = self.lidar.get_distance()    # zero if LIDAR error
 
-            if dist > 200:
+            if (dist > 400) or (dist <= 1):
+                #print("Got OVERVALUE Scan")
                 dist = 10000
 
             if dist < self.min_dist and dist > 1:
@@ -137,7 +138,7 @@ if __name__ == "__main__":
     
     start = time.time()
     scanner.init_3D_scan(min_pitch = 0,    max_pitch = 0,
-                         min_heading = -90.0, max_heading = 90.0,)
+                         min_heading = -45.0, max_heading = 45.0,)
     scanner.do_3D_scan(1)
     scan_data = scanner.get_scan_data()
     scanner.scanner_reset()

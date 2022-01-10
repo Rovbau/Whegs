@@ -1,11 +1,13 @@
 /*
- * File:   ServoCont.c
+ * File:   MotorController.c
  * Author: Michael
- * Program steuert Motor mit P-Regler via MotorEncoder an RA0 und PWM out an RB0
- * Bei WriteBefehl via I2c (1 = Encoder1 , 2 = Encoder  2) daten bereitstellen (Encoder ungleich 1 or 2 Error Wert senden)
- * Wenn ReadBefehl via I2c Encoder1 oder Enc.2 Pulse senden und Pulse auf Null setzen
- * Created 
- * STATUS: 
+ * Program steuert Motor mit P-Regler via Encoder an RA0 (Mit Interrupt) und PWM-out an RB3
+ * Bei  WriteBefehl via I2c (Adresse, Direction, PWM-Duty) Motoren ansteuern via PWM an RB3 und Direction via RB6,RB7
+ * Wenn ReadBefehl via I2c (Adressse, Register) daten zu Master senden : Register 0x00 = "1" 0x01/0x02 = "counts" bei fehler sende "3"
+ * Comparator wird für Overload abfrage benutzt, setzt current_LED an RB5 wenn anzahl-cycle overload überschritten
+ * 
+ * Created 12.04.2021
+ * STATUS: Working
  */
 
 
@@ -45,23 +47,22 @@
 #define PWM_freq 1000
 
 char cDummy;
-char data_arr[2] = {255, 255};
+char data_arr[4] = {255, 255, 255, 255};
 char data_index;
 char timer_over;
 signed int counting_pulse, actual_speed;
 signed int enc_counts = 0;
-signed int save_enc1;
+signed int save_enc_counts = 0;
 signed int pwm_setting = 0;
+signed int pwm_old = 0;
 signed int diff = 0;
 char encoder_old;
-int new1, diff1;
-int last1;
 int heating_up;
+char input_data[2] = {255,255};
 
-
-void __interrupt I2C()// In t e r r u p t r o u t i n e
+void __interrupt() my_isr(void)
+//void __interrupt I2C()// In t e r r u p t r o u t i n e
 {
-
     if (INTCONbits.INT0IF == 1) {
         if (EncoderB == 1) {
             enc_counts += 1;
@@ -87,6 +88,7 @@ void __interrupt I2C()// In t e r r u p t r o u t i n e
             // SSPSTAT bits : S=1, D/A=0, R/W=0, BF=1
             cDummy = SSPBUF;
             data_index = 0;
+
             SSPSTATbits.BF = 0; // Flag Buf f er?Ful l l oe s chen
             SSPCONbits.CKP = 1; // Cl o c k s t r e t ch i n g er lauben
             PIR1bits.SSPIF = 0; // SSP?Int e r rupt?Flag wi eder l oe s chen
@@ -96,34 +98,59 @@ void __interrupt I2C()// In t e r r u p t r o u t i n e
             // SSPSTAT bits : S=1, D/A=1, R/W=1, BF=1
             data_arr[data_index] = SSPBUF; //Data lesen und sichern // Datenbyte von SSPBUF lesen und am
             data_index += 1;
-            
+
+            if (data_index == 2) { //data_index == 2 means "write" command complete
+                input_data[0] = data_arr[0];
+                input_data[1] = data_arr[1];
+            }
+
             SSPCONbits.CKP = 1; // Cl o c k s t r e t ch i n g er lauben
             PIR1bits. SSPIF = 0; // SSP? Interrupt?Flag wieder loeschen
             return;
         }
     } else {
-        // Lesezugriff ( aus Sicht des Masters , d.H. Slave muss Daten in Sende und
+        // State 3: Lesezugriff ( aus Sicht des Masters , d.H. Slave muss Daten in Sende und
         // Empfangsbuffer (SSPBUF) schreiben )
         if (SSPSTATbits.D_nA == 0) {
-        data_index = 0;
-        switch (data_arr[0])
-        {
-        case 0:
-              SSPBUF = 11;
-        case 1:
-            SSPBUF = enc_counts;               
-            break;
-        default:                        
-            SSPBUF = 3;
-            break;      
-        }
-        SSPCONbits.CKP = 1 ;            // Clockstretchinger erlauben
-        PIR1bits.SSPIF = 0 ;            // SSP?Interrupt?Flagwieder loeschen
-        return;
-    } else {
+
+            data_index = 0; //data_index to clear during read command
+
+            switch (data_arr[0]) {
+                case 0:
+                    SSPBUF = 1;
+                case 1:
+                    save_enc_counts = enc_counts; //prevent overflow during send high/low byte
+                    SSPBUF = save_enc_counts; //Low-Datenbyte lesen und in SSPBUF schreiben
+                    break;
+                case 2:
+                    SSPBUF = save_enc_counts >> 8; //High-Datenbyte lesen und in SSPBUF schreiben
+                    save_enc_counts = 0;
+                    enc_counts = 0;
+                    break;
+                case 3:
+                    SSPBUF = heating_up;        //Low-Datenbyte of overload indicator
+                    break;
+                case 4:
+                    SSPBUF = heating_up >> 8; //High-Datenbyte of overload indicator
+                    break; 
+                case 5:
+                    SSPBUF = pwm_setting;        //Low-Datenbyte of PWM Power indicator
+                    break;
+                case 6:
+                    SSPBUF = pwm_setting >> 8; //High-Datenbyte of PWM  Power indicator
+                    break; 
+                default:
+                    SSPBUF = 1;
+                    break;
+            }
+            SSPCONbits.CKP = 1; // Clockstretchinger erlauben
+            PIR1bits.SSPIF = 0; // SSP?Interrupt?Flagwieder loeschen
+            return;
+        } else {
             // State 4 : I2C read operation , last byte was a data byte
             // SSPSTAT bits : S=1, D/A=1, R/W=0, BF=0
             SSPBUF = cDummy;
+
             SSPCONbits.CKP = 1; // Cl o c k s t r e t ch i n g er lauben
             PIR1bits.SSPIF = 0; // SSP?Int e r rupt?Flag wi eder l oe s chen
             return;
@@ -179,12 +206,19 @@ void init_timer0(void) {
 }
 
 void p_regler(void) {
-    diff = data_arr[1] - actual_speed; // Soll - ist
-    diff = diff * -2; //P-Wert normaly 2-10
+    diff = input_data[1] - actual_speed; // Soll - ist
+    diff = diff * -1; //P-Wert normaly 2-10
 
     pwm_setting = pwm_setting + diff;
 
-    if (data_arr[1] == 255) { //Stop PWM
+    if (pwm_setting > pwm_old + 20) { //Limit slope
+        pwm_setting = pwm_old + 20;
+    }
+    if (pwm_setting < pwm_old - 20) { //Limit slope 
+        pwm_setting = pwm_old - 20;
+    }
+
+    if (input_data[1] == 255) { //Stop PWM
         pwm_setting = 0;
     }
 
@@ -194,11 +228,12 @@ void p_regler(void) {
     if (pwm_setting >= 1023) {
         pwm_setting = 1023;
     }
+    
+    pwm_old = pwm_setting;
 }
 
 void direction(void) {
-
-    if (data_arr[0] == 128) {
+    if (input_data[0] == 128) {
         DirectionL = 0;
         DirectionR = 1;
     } else {
@@ -238,11 +273,7 @@ over_current(void) {
         current_LED = 0;
     }
 
-    if (heating_up > 50) {  //Limit Current after ca. 1sec
-        pwm_setting = 900;
-    }
-
-    if (heating_up > 400) {  //Limit Current after ca. 8sec
+    if (heating_up > 500 && pwm_setting > 50) {  //Limit Current after ca. 8sec
         pwm_setting = 50;
     }
     
@@ -268,9 +299,9 @@ void main() {
     Debug_LED = 1;
     
     //I2C_Slave_Init(0x32); // Motor #1 = 19 on RasPi Initialize as a I2C Slave with address 0x32
-    //I2C_Slave_Init(0x34); // Motor #2
-    //I2C_Slave_Init(0x36); // Motor #3
-    I2C_Slave_Init(0x38); // Motor #4
+    //I2C_Slave_Init(0x34); // Motor 1A #2
+    //I2C_Slave_Init(0x36); // Motor 1B #3
+    I2C_Slave_Init(0x38); // Motor 1C #4
     //init_timer0();
     pwm_duty(0);
     init_pwm();

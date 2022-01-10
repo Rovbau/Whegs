@@ -11,7 +11,7 @@ class VisualisationScan():
         self.img1 = ImageDraw.Draw(self.img)
 
     def draw_scan(self, obstacles, position):
-        #self.img1.rectangle([0,0,300,300], fill = "lightgrey")
+        self.img1.rectangle([0,0,300,300], fill = "lightgrey")
         x, y, pose = position
         self.img1.rectangle([    (x * self.ZOOM) + self.CENTER, 
                                 (y * self.ZOOM) + self.CENTER,

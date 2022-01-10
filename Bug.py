@@ -1,0 +1,84 @@
+
+
+class Bug():
+    def __init__(self):
+        self.MIN_DIST = 90
+        self.front = "free"
+        self.left  = "free"
+        self.right = "free"
+        self.speed = 1
+        self.LOW_SPEED = 0.3
+
+
+    def analyse(self, scan_data):
+        """Analyse Scan an find free space"""
+        last_scan = scan_data[-1]
+
+        self.front = "free"
+        self.left  = "free"
+        self.right = "free"
+        self.front_min = 999
+        self.left_min  = 999
+        self.right_min = 999
+        self.speed = 0.4
+       
+        for point in last_scan:
+            pitch, heading, dist = point
+            #Straight +/-15° @ dist = 90 -> 50cm free-space
+            if -10 < heading < 10:
+                if dist < self.MIN_DIST:
+                    self.front = "blocked"
+                    self.speed = self.LOW_SPEED
+                    self.front_min = 0.1 ##min(self.front_min, dist)
+            #Left
+            if -90 < heading < -10:
+                if dist < self.MIN_DIST:
+                    self.left = "blocked"
+                    self.speed = self.LOW_SPEED
+                    self.left_min = min(self.left_min, dist)
+            #Right
+            if 10 < heading < 90:
+                if dist < self.MIN_DIST:
+                    self.right = "blocked"
+                    self.speed = self.LOW_SPEED
+                    self.right_min = min(self.right_min, dist)
+
+        return(self.front, self.left, self.right)
+
+    def modus_sinus(self, front, left, right):
+        steer = ((1 / self.left_min ) + (-1 / self.right_min) + (-1 / self.front_min)) * 50
+        return(round(steer, 2), round(self.speed, 2))
+
+
+    def modus(self, front, left, right):
+        steer = 0
+
+        if front == "free" and left == "blocked" and right == "blocked":
+            steer = (self.right_min - self.left_min) * 0.05
+        elif front == "blocked" and left == "free" and right == "free":
+            steer = 1
+        elif front == "blocked"  and left == "blocked":
+            steer = 1
+        elif front == "blocked" and  right == "blocked":
+            steer = -1
+        else:
+            steer = 0
+            print("DECISION NOT DEFINED")
+        return(round(steer, 2), round(self.speed, 2))
+        
+                
+
+
+
+if __name__ == "__main__":
+
+    bug = Bug()
+
+    scan_data = [[[0, -90.0, 100], [0, 0.0, 59], [0, 18.2, 59]]]
+    front, left, right = bug.analyse(scan_data)
+    steer = bug.modus(front, left, right)
+    print(bug.left)
+    print(bug.front)
+    print(bug.right)
+    print(steer)
+
