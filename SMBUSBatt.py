@@ -72,12 +72,12 @@ if __name__ == "__main__":
  
     while True:
         os.system("clear")
-        print("Volage:  " + str(batt.get_voltage()))
-        print("Current: " + str(batt.get_current()))
-        print("State:   " + str(batt.get_relative_charge()))
-        print("Empty in:" + str(batt.get_time_to_empty()))
-        print("Full in: " + str(batt.get_time_to_full()))
-        print("OS Time: " + str(time.asctime()))
+        print("Voltage:  " + str(batt.get_voltage()))
+        print("Current:  " + str(batt.get_current()))
+        print("State:    " + str(batt.get_relative_charge()))
+        print("Empty in: " + str(batt.get_time_to_empty()))
+        print("Full in:  " + str(batt.get_time_to_full()))
+        print("OS Time:  " + str(time.asctime()))
         time.sleep(0.5)
         if batt.get_relative_charge() > 80:
             print('\a')

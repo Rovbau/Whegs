@@ -10,11 +10,12 @@ class MotorDataLogger():
 
         self.file = open(self.filename,"a")
         self.file.write("VL_Counts" + "," + "PWM" + "," + "Over_c" + "," +
-                            "VR_Counts" + "," + "PWM" + "," + "Over_c" + "," + 
-                            "HL_Counts" + "," + "PWM" + "," + "Over_c" + "," +
-                            "HR_Counts" + "," + "PWM" + "," + "Over_c" + "\n")
+                        "VR_Counts" + "," + "PWM" + "," + "Over_c" + "," + 
+                        "HL_Counts" + "," + "PWM" + "," + "Over_c" + "," +
+                        "HR_Counts" + "," + "PWM" + "," + "Over_c" + "," +
+                        "Bat_Current" +"\n")
     
-    def store(self):
+    def store(self, bat_current = None):
         """Store all motor-data (Counts, PWM, Overcurrent) in file"""
         vl_counts = self.motion_class.motor_VL.get_counts()
         vl__PWM =   self.motion_class.motor_VL.get_PWM()
@@ -32,7 +33,9 @@ class MotorDataLogger():
         self.file.write(    str(vl_counts) + "," + str(vl__PWM) + "," + str(vl_over) + "," +
                             str(vr_counts) + "," + str(vr__PWM) + "," + str(vr_over) + "," +
                             str(hl_counts) + "," + str(hl__PWM) + "," + str(hl_over) + "," +
-                            str(hr_counts) + "," + str(hr__PWM) + "," + str(hr_over) + "\n")
+                            str(hr_counts) + "," + str(hr__PWM) + "," + str(hr_over) + "," +
+                            str(bat_current) + "\n")
+        self.file.flush()
 
     def close_file(self):
         self.file.close()

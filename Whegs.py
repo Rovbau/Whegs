@@ -100,7 +100,7 @@ class Whegs:
                 print("BATTERY empty")
                          
             current = self.batterie.get_current()
-            if ( 5000 < current < 65000) or motion_error == True:
+            if ( 6000 < current < 65000) or motion_error == True:
                 steer = 0
                 speed = 0
                 motion_error = True
@@ -111,12 +111,14 @@ class Whegs:
             else:
                 self.distance = None
 
-            heading = self.kompass.get_heading()
-
             #Store the Motor data for all 4 motors
-            self.motorDataLogger.store()
-            
-            #self.karte.updateRoboPos(deltaL, deltaR, heading)
+            #self.motorDataLogger.store(current)
+
+            deltaL = self.motion.motor_VL.get_counts()
+            deltaR = self.motion.motor_VR.get_counts()
+            heading = self.kompass.get_heading()
+            print(deltaL, deltaR)
+            self.karte.updateRoboPos(deltaL * (-1), deltaR, heading)
             x, y, pose = self.karte.getRoboPos()
 
             self.scanner.do_3D_scan(1)         
@@ -125,18 +127,21 @@ class Whegs:
 
             self.karte.updateObstacles(scan_data)
             obstacles = self.karte.getObstacles()
-            #print(obstacles)
+            print(obstacles)
             self.visualisationScan.draw_scan(obstacles, [x, y, pose] )
+            self.visualisationScan.search_line(obstacles)
 
             front, left , right = self.bug.analyse(scan_data)
             #steer, speed_korr = self.bug.modus(front, left, right)
-            steer, speed_korr = self.bug.modus_sinus(front, left, right)
+            steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
 
+            print("Heading:" +str(heading))
             print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
             print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
             print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
+            print("Current: " + str(current))
             print("Steer: " + str(steer) + "  Speed_korr: " + str(speed_korr))
-            print()
+            print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
                  
             #avoid_steering, max_left, max_right = self.avoid.get_nearest_obst(x, y, pose, obstacles)
             #steering_output, speed = self.planer.set_modus(x, y, pose, steer, speed, avoid_steering, max_left, max_right, False)
@@ -147,7 +152,7 @@ class Whegs:
             #print("Position: "+ str(x) + " "+ str(y) + " " + str(pose))
             #print("Steer: " +str(steer))
 
-            self.motion.set_motion(steer  , min(speed * speed_korr , 0.7))
+            self.motion.set_motion(steer  , min(speed * speed_korr  , 0.7)) 
             self.pumper.status_led("off")
             sleep(0.2)
             #os.system('clear')

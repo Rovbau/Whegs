@@ -9,6 +9,14 @@ class Bug():
         self.speed = 1
         self.LOW_SPEED = 0.3
 
+    def angle_diff(self, soll, ist):
+        """get angle between two angles in range -180/180 """
+        angle = (soll-ist)
+        if angle > 180:
+            angle = angle - 360
+        if angle < -180:
+            angle = 360 + angle
+        return(angle)
 
     def analyse(self, scan_data):
         """Analyse Scan an find free space"""
@@ -20,7 +28,7 @@ class Bug():
         self.front_min = 999
         self.left_min  = 999
         self.right_min = 999
-        self.speed = 0.4
+        self.speed = 0.5
        
         for point in last_scan:
             pitch, heading, dist = point
@@ -31,6 +39,7 @@ class Bug():
                     self.speed = self.LOW_SPEED
                     self.front_min = 0.1 ##min(self.front_min, dist)
             #Left
+            
             if -90 < heading < -10:
                 if dist < self.MIN_DIST:
                     self.left = "blocked"
@@ -45,8 +54,13 @@ class Bug():
 
         return(self.front, self.left, self.right)
 
-    def modus_sinus(self, front, left, right):
-        steer = ((1 / self.left_min ) + (-1 / self.right_min) + (-1 / self.front_min)) * 50
+    def modus_sinus(self, front, left, right, heading):
+        "avoid obstacles depending on dist to obstacles. and heading to goal"
+
+        goal_heading = self.angle_diff(0, heading)
+
+        steer = ( (1 / self.left_min )  + (-1 / self.right_min) + (-1 / self.front_min)) * 50   
+
         return(round(steer, 2), round(self.speed, 2))
 
 

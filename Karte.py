@@ -21,9 +21,9 @@ class Karte():
     def updateObstacles(self, obstacles):
         """Obstacles werden in Karte eingetragen"""
         self.obstacles_local_xy = []
-        obstacles = obstacles[-1]
+        obstacles = obstacles[-1]   #Only last Line in scan
         for element in obstacles:
-            dx, dy = self.polar_to_kartesian(element[2], element[1])
+            dx, dy = self.polar_to_kartesian(element[2], element[1] * (-1 ))  # heading*(-1) mirrors Map
             self.obstacles_local_xy.append([dx, dy])
         global_obs = self.calcGlobalObstaclePosition(self.obstacles_local_xy)
         self.globalObstaclesList.extend(global_obs)
@@ -54,7 +54,7 @@ class Karte():
     def updateRoboPos(self,deltaL,deltaR,KompassCourse=None):
         """Update Robo Position auf Karte"""
         #RoboSchwerpunkt bis Rad cm
-        Radstand= 35.0
+        Radstand= 65.0 #35.0
         countsRadGross= 1440
 
         #Werte Uebernehmen: Counts in (cm) umrechnen
@@ -69,8 +69,8 @@ class Karte():
             self.global_kurs=360-abs(self.global_kurs)            
         global_kurs_radiant=radians(self.global_kurs)
         ## Uncomment following two, if you use Compass ##
-        global_kurs_radiant = radians(KompassCourse)
-        self.global_kurs = degrees(global_kurs_radiant)
+        #global_kurs_radiant = radians(KompassCourse)
+        #self.global_kurs = degrees(global_kurs_radiant)
                          
 
         if deltaL != deltaR:

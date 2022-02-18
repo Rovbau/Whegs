@@ -33,8 +33,10 @@ class MotorController():
             self.direction_old = direction
             try:
                 bus.write_byte_data(self.addr, int(direction), int(255))
+                sleep(0.05)
             except:
                 print("Motor " + str(self.addr) + "not ready")
+
         if direction == 1:
             direction = 127
         elif direction == -1:
@@ -94,9 +96,9 @@ class MotorController():
 if __name__ == "__main__":
 
     motor_VL = MotorController(0x19)
-    motor_VL.set_motor(speed = 255, direction = 1)
+    motor_VL.set_motor(speed = 100, direction = 1)
     print(motor_VL.get_counts())
     print(motor_VL.clear_counts())
     print(motor_VL.get_PWM())
     print(motor_VL.get_overcurrent())
-
+        
