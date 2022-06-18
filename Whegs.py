@@ -14,6 +14,7 @@ from Karte import *
 from Bug import *
 from MotorDataLogger import *
 from VisualisationScan import *
+from IterativeScan import *
 
 class Whegs:
     def __init__(self):
@@ -58,6 +59,9 @@ class Whegs:
 
     def run(self):
         motion_error = False
+        scan_old = []
+        x_scan, y_scan, pose_scan = 0, 0, 0
+        x_summ, y_summ, pose_summ = 0, 0, 0
 
         while True:
             self.pumper.status_led("on")
@@ -117,7 +121,6 @@ class Whegs:
             deltaL = self.motion.motor_VL.get_counts()
             deltaR = self.motion.motor_VR.get_counts()
             heading = self.kompass.get_heading()
-            print(deltaL, deltaR)
             self.karte.updateRoboPos(deltaL * (-1), deltaR, heading)
             x, y, pose = self.karte.getRoboPos()
 
@@ -127,9 +130,19 @@ class Whegs:
 
             self.karte.updateObstacles(scan_data)
             obstacles = self.karte.getObstacles()
-            print(obstacles)
+            #print(obstacles)
+            
+            #self.visualisationScan.search_LSRegression(obstacles)
             self.visualisationScan.draw_scan(obstacles, [x, y, pose] )
-            self.visualisationScan.search_line(obstacles)
+
+            scan = obstacles
+            if scan_old == []:
+                scan_old = scan
+            #x_scan, y_scan, pose_scan = match_scans(scan, scan_old)
+            scan_old = obstacles
+            x_summ += x_scan
+            y_summ += y_scan
+            pose_summ += pose_scan
 
             front, left , right = self.bug.analyse(scan_data)
             #steer, speed_korr = self.bug.modus(front, left, right)
@@ -141,7 +154,9 @@ class Whegs:
             print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
             print("Current: " + str(current))
             print("Steer: " + str(steer) + "  Speed_korr: " + str(speed_korr))
-            print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
+            #print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
+            #print("Position: " +str(x_scan) + " " + str(y_scan) + " " + str(pose_scan))
+            #print("Summ: " +str(x_summ) + " " + str(y_summ) + " " + str(pose_summ))
                  
             #avoid_steering, max_left, max_right = self.avoid.get_nearest_obst(x, y, pose, obstacles)
             #steering_output, speed = self.planer.set_modus(x, y, pose, steer, speed, avoid_steering, max_left, max_right, False)

@@ -83,7 +83,7 @@ class Scanner():
 
             if (dist > 400) or (dist <= 1):
                 #print("Got OVERVALUE Scan")
-                dist = 10000
+                dist = 1000
 
             if dist < self.min_dist and dist > 1:
                 self.min_dist = dist

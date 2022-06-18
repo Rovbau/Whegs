@@ -8,6 +8,8 @@ class Bug():
         self.right = "free"
         self.speed = 1
         self.LOW_SPEED = 0.3
+        self.new_goal = 1
+        self.goal_heading_old = 1
 
     def angle_diff(self, soll, ist):
         """get angle between two angles in range -180/180 """
@@ -58,8 +60,25 @@ class Bug():
         "avoid obstacles depending on dist to obstacles. and heading to goal"
 
         goal_heading = self.angle_diff(0, heading)
+        if goal_heading >= 0:
+            goal_heading = 1
+        else:
+            goal_heading = -1
 
-        steer = ( (1 / self.left_min )  + (-1 / self.right_min) + (-1 / self.front_min)) * 50   
+        print("goal_heading: " + str(goal_heading))
+
+        if self.left == "free" and self.right == "free" and self.front == "free":
+            lock = False
+        else:
+            lock = True
+
+        if (goal_heading != self.goal_heading_old) and lock == False:
+            self.new_goal = goal_heading
+            self.goal_heading_old = goal_heading
+
+        print("new_goal: " + str(self.new_goal))
+
+        steer = ((1 / self.left_min)  + (-1 / self.right_min) + ((-1 / self.front_min) * self.new_goal)) * 50   
 
         return(round(steer, 2), round(self.speed, 2))
 
