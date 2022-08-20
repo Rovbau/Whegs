@@ -61,9 +61,9 @@ class Bug():
 
         goal_heading = self.angle_diff(0, heading)
         if goal_heading >= 0:
-            goal_heading = 1
-        else:
             goal_heading = -1
+        else:
+            goal_heading = 1
 
         print("goal_heading: " + str(goal_heading))
 
@@ -71,14 +71,15 @@ class Bug():
             lock = False
         else:
             lock = True
+        print("lock = " + str(lock))
 
-        if (goal_heading != self.goal_heading_old) and lock == False:
+        if lock == False:
             self.new_goal = goal_heading
             self.goal_heading_old = goal_heading
 
         print("new_goal: " + str(self.new_goal))
-
-        steer = ((1 / self.left_min)  + (-1 / self.right_min) + ((-1 / self.front_min) * self.new_goal)) * 50   
+        #(goal_heading * (-1)/50)
+        steer = ((goal_heading/80) + (1 / self.left_min)  + (-1 / self.right_min) + ((1 / self.front_min) * self.new_goal)) * 50   
 
         return(round(steer, 2), round(self.speed, 2))
 

@@ -21,7 +21,46 @@ class Motion():
         self.settings_HR = 0,0
 
         self.speed = 0
-    
+
+    def set_motion_ackermann_steering(self, steer, speed):
+        """Set the 4 Motors speed and direction according steer, speed values"""
+        steer = max(min(1.0,steer), -1.0)
+        self.speed = max(min(1.0,speed), -1.0)
+        
+        if abs(steer) < 0.1:        #settings_xy is motorspeed, direction
+            self.settings_VL = 1, 1
+            self.settings_VR = 1, 1
+            self.settings_HL = 1, 1
+            self.settings_HR = 1, 1
+        elif steer > 0 and steer < 0.7:    
+            self.settings_VL = 1, 1
+            self.settings_VR = 1 - steer, 1
+            self.settings_HL = 1 - steer, 1
+            self.settings_HR = 1 , 1
+        elif steer >= 0.7:
+            self.settings_VL = 1, 1
+            self.settings_VR = 1 - steer, 1
+            self.settings_HL = 1 - steer, 1
+            self.settings_HR = 1, 1 
+        elif steer < 0 and steer > -0.7:    
+            self.settings_VL = 1 - abs(steer), 1
+            self.settings_VR = 1, 1
+            self.settings_HL = 1, 1 
+            self.settings_HR = 1 - abs(steer), 1
+        elif steer <= -0.7:
+            self.settings_VL = 1 - abs(steer), 1
+            self.settings_VR = 1, 1
+            self.settings_HL = 1, 1
+            self.settings_HR = 1 - abs(steer), 1
+        else:
+            print("Error parsing speed Value")
+
+        self.set_motorcontroller(self.motor_VL, self.settings_VL)
+        self.set_motorcontroller(self.motor_VR, self.settings_VR)
+        self.set_motorcontroller(self.motor_HL, self.settings_HL)
+        self.set_motorcontroller(self.motor_HR, self.settings_HR)
+
+   
     def set_motion(self, steer, speed):
         """Set the 4 Motors speed and direction according steer, speed values"""
         steer = max(min(1.0,steer), -1.0)
@@ -60,8 +99,6 @@ class Motion():
         self.set_motorcontroller(self.motor_HL, self.settings_HL)
         self.set_motorcontroller(self.motor_HR, self.settings_HR)
 
-
-
     def set_motorcontroller(self, motor, settings):
         speed, direction = settings
         speed = speed  * self.speed
@@ -83,14 +120,17 @@ if __name__ == "__main__":
 
     motion  = Motion()
 
+    motion.set_motion_ackermann_steering(-1, 0.5)
 
-    for i in range(10):
-        print("Setting is: " + str(i / 10))
-        motion.set_motion(i / 10 , 0.5)
-        print()
-        sleep(1)
+    #motion.set_motion(0.6,0.5)
+    sleep(5)
+    motion.set_motion(0,0)
 
-    motion.set_motion(0,1)
+##   for i in range(10):
+##       print("Setting is: " + str(i / 10))
+##       motion.set_motion(i / 10 , 0.5)
+##       print()
+##       sleep(1)
 
 ##    print("Straigt")
 ##    motion.set_motion(0,1)

@@ -40,7 +40,7 @@ class Whegs:
 
     def init(self):
         self.start = time()
-        self.scanner.init_3D_scan(min_pitch = 0,    max_pitch = 0, min_heading = -40.0, max_heading = 40.0,)
+        self.scanner.init_3D_scan(min_pitch = 0,    max_pitch = 0, min_heading = -45.0, max_heading = 45.0,)
         self.ThreadEncoder = Thread(target=self.man.runManuell, args=(), daemon=True)
         self.ThreadEncoder.start()
 
@@ -138,7 +138,7 @@ class Whegs:
             scan = obstacles
             if scan_old == []:
                 scan_old = scan
-            #x_scan, y_scan, pose_scan = match_scans(scan, scan_old)
+            x_scan, y_scan, pose_scan = match_scans(scan, scan_old)
             scan_old = obstacles
             x_summ += x_scan
             y_summ += y_scan
@@ -148,14 +148,17 @@ class Whegs:
             #steer, speed_korr = self.bug.modus(front, left, right)
             steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
 
+            #Manuell Steering
+            steer, speed = self.man.getManuellCommand()
+
             print("Heading:" +str(heading))
             print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
             print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
             print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
             print("Current: " + str(current))
             print("Steer: " + str(steer) + "  Speed_korr: " + str(speed_korr))
-            #print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
-            #print("Position: " +str(x_scan) + " " + str(y_scan) + " " + str(pose_scan))
+            print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
+            print("Position: " +str(x_scan) + " " + str(y_scan) + " " + str(pose_scan))
             #print("Summ: " +str(x_summ) + " " + str(y_summ) + " " + str(pose_summ))
                  
             #avoid_steering, max_left, max_right = self.avoid.get_nearest_obst(x, y, pose, obstacles)
@@ -167,7 +170,7 @@ class Whegs:
             #print("Position: "+ str(x) + " "+ str(y) + " " + str(pose))
             #print("Steer: " +str(steer))
 
-            self.motion.set_motion(steer  , min(speed * speed_korr  , 0.7)) 
+            self.motion.set_motion_ackermann_steering(steer  , min(speed  , 0.8)) 
             self.pumper.status_led("off")
             sleep(0.2)
             #os.system('clear')

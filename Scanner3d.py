@@ -137,9 +137,9 @@ if __name__ == "__main__":
     scanner = Scanner()
     
     start = time.time()
-    scanner.init_3D_scan(min_pitch = 0,    max_pitch = 0,
+    scanner.init_3D_scan(min_pitch = 0,    max_pitch = 10,
                          min_heading = -90.0, max_heading = 90.0,)
-    scanner.do_3D_scan(1)
+    scanner.do_3D_scan(10)
     scan_data = scanner.get_scan_data()
     scanner.scanner_reset()
     print(scan_data)

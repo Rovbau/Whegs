@@ -96,9 +96,26 @@ class MotorController():
 if __name__ == "__main__":
 
     motor_VL = MotorController(0x19)
-    motor_VL.set_motor(speed = 100, direction = 1)
-    print(motor_VL.get_counts())
-    print(motor_VL.clear_counts())
-    print(motor_VL.get_PWM())
-    print(motor_VL.get_overcurrent())
+    motor_VR = MotorController(0x1B)
+    motor_HL = MotorController(0x1A)
+    motor_HR = MotorController(0x1C)
+
+    #Go Robo go
+    motor_VL.set_motor(speed = 100, direction = 1)   
+    motor_VR.set_motor(speed = 80, direction = 1)   
+    motor_HL.set_motor(speed = 100, direction = 1)   
+    motor_HR.set_motor(speed = 120, direction = 1)
+
+    sleep(20)
+
+    #Stopping @ speed = 0
+    motor_VL.set_motor(speed = 0, direction = 1)
+    motor_VR.set_motor(speed = 0, direction = 1)
+    motor_HL.set_motor(speed = 0, direction = 1)
+    motor_HR.set_motor(speed = 0, direction = 1)
+
+    print("Counts VL: " + str(motor_VL.get_counts()))
+    print("Clear  VL: " + str(motor_VL.clear_counts()))
+    print("PWM    VL: " + str(motor_VL.get_PWM()))
+    print("OverCurVL: " + str(motor_VL.get_overcurrent()))
         
