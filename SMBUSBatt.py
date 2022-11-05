@@ -78,7 +78,7 @@ if __name__ == "__main__":
         print("Empty in: " + str(batt.get_time_to_empty()))
         print("Full in:  " + str(batt.get_time_to_full()))
         print("OS Time:  " + str(time.asctime()))
-        time.sleep(0.5)
+        time.sleep(1.5)
         if batt.get_relative_charge() > 80:
             print('\a')
 

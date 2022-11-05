@@ -28,6 +28,9 @@ class MotorController():
         """Set the motor speed and direction via i2c"""
         speed = 255 - abs(speed) * 255
 
+        if speed > 255 or speed < 0:
+            print("MotorController Speed value failed")
+
         #Set Motor to Stop before direction change
         if self.direction_old != direction:
             self.direction_old = direction

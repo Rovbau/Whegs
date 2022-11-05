@@ -22,45 +22,73 @@ class Motion():
 
         self.speed = 0
 
-    def set_motion_ackermann_steering(self, steer, speed):
+    def set_motion_ackermann_steering(self, steer, speed, rear_axle_position):
         """Set the 4 Motors speed and direction according steer, speed values"""
-        steer = max(min(1.0,steer), -1.0)
-        self.speed = max(min(1.0,speed), -1.0)
+        rear_axle_setpoint = 0
+        steer = max(min(1.0, steer), -1.0)
+        self.speed = max(min(1.0, speed), -1.0)
         
         if abs(steer) < 0.1:        #settings_xy is motorspeed, direction
             self.settings_VL = 1, 1
             self.settings_VR = 1, 1
             self.settings_HL = 1, 1
             self.settings_HR = 1, 1
+            rear_axle_setpoint = 0
         elif steer > 0 and steer < 0.7:    
             self.settings_VL = 1, 1
-            self.settings_VR = 1 - steer, 1
-            self.settings_HL = 1 - steer, 1
-            self.settings_HR = 1 , 1
+            self.settings_VR = 1 - steer/2, 1
+            self.settings_HL = 1 - steer/2, 1
+            self.settings_HR = 1, 1
+            rear_axle_setpoint = 100
         elif steer >= 0.7:
             self.settings_VL = 1, 1
-            self.settings_VR = 1 - steer, 1
-            self.settings_HL = 1 - steer, 1
+            self.settings_VR = 1 - steer/2, 1
+            self.settings_HL = 1 - steer/2, 1
             self.settings_HR = 1, 1 
+            rear_axle_setpoint = 100
         elif steer < 0 and steer > -0.7:    
-            self.settings_VL = 1 - abs(steer), 1
+            self.settings_VL = 1 - abs(steer/2), 1
             self.settings_VR = 1, 1
             self.settings_HL = 1, 1 
-            self.settings_HR = 1 - abs(steer), 1
+            self.settings_HR = 1 - abs(steer/2), 1
+            rear_axle_setpoint = -100
         elif steer <= -0.7:
-            self.settings_VL = 1 - abs(steer), 1
+            self.settings_VL = 1 - abs(steer/2), 1
             self.settings_VR = 1, 1
             self.settings_HL = 1, 1
-            self.settings_HR = 1 - abs(steer), 1
+            self.settings_HR = 1 - abs(steer/2), 1
+            rear_axle_setpoint = -100
         else:
             print("Error parsing speed Value")
 
-        self.set_motorcontroller(self.motor_VL, self.settings_VL)
-        self.set_motorcontroller(self.motor_VR, self.settings_VR)
-        self.set_motorcontroller(self.motor_HL, self.settings_HL)
-        self.set_motorcontroller(self.motor_HR, self.settings_HR)
+        axle_differenz = rear_axle_position - rear_axle_setpoint
 
-   
+        motorspeed, direktion = self.settings_HL
+        motorspeed += axle_differenz / 150    
+        self.settings_HL = motorspeed, direktion
+
+        motorspeed, direktion = self.settings_HR
+        motorspeed -= axle_differenz / 150   
+        self.settings_HR = motorspeed, direktion
+
+        print("Motor Links : " +str(self.settings_HL))
+        print("Motor Rechts: " +str(self.settings_HR))
+
+        self.set_motorcontroller_ackermann_steering(self.motor_VL, self.settings_VL)
+        self.set_motorcontroller_ackermann_steering(self.motor_VR, self.settings_VR)
+        self.set_motorcontroller_ackermann_steering(self.motor_HL, self.settings_HL)
+        self.set_motorcontroller_ackermann_steering(self.motor_HR, self.settings_HR)
+
+    def set_motorcontroller_ackermann_steering(self, motor, settings):
+        speed, direction = settings
+        speed = speed  * self.speed
+        speed  = max(min(1.0, speed), -1)
+        print(motor, speed, direction)
+        if speed < 0:
+            direction = direction * (-1)
+        motor.set_motor(speed, direction)
+
+
     def set_motion(self, steer, speed):
         """Set the 4 Motors speed and direction according steer, speed values"""
         steer = max(min(1.0,steer), -1.0)

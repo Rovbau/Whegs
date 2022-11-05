@@ -22,11 +22,13 @@ class Servo():
             print("Servo not ready")
 
     def get_analog(self):
-        """Count pulse from Motor"""
+        """Get Position of rear axle, Left = 624 Right= 401 Mid = 514"""
+
+        MID_POSITION = 514
         try:
             low = bus.read_byte_data(self.addr_pic, 0x07)  #Read PIC Register1 => CountsLowByte
             high = bus.read_byte_data(self.addr_pic, 0x08) #Read PIC Register1 => CountsHighByte
-            analog = self.bits_to_int(low, high)          
+            analog = MID_POSITION - self.bits_to_int(low, high)          
         except:
             analog = 0
             print("Analog " +str(self.addr_pic) + " not ready")
@@ -43,10 +45,10 @@ if __name__ == "__main__":
 
     servo = Servo()
 
-    servo.set_servo_angle(0)
+    servo.set_servo_angle(10)
     print("Servo to ...")
     sleep(3)  
-    servo.set_servo_angle(10)
+    servo.set_servo_angle(0)
     print("Servo to ...")
     sleep(3)
 

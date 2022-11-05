@@ -67,6 +67,7 @@ class Whegs:
             self.pumper.status_led("on")
 
             steer, speed = self.man.getManuellCommand()
+
             while steer == 10 and speed == 10:
                 self.motion.set_motion(0,0)
                 steer, speed = self.man.getManuellCommand()
@@ -135,30 +136,27 @@ class Whegs:
             #self.visualisationScan.search_LSRegression(obstacles)
             self.visualisationScan.draw_scan(obstacles, [x, y, pose] )
 
-            scan = obstacles
-            if scan_old == []:
-                scan_old = scan
-            x_scan, y_scan, pose_scan = match_scans(scan, scan_old)
-            scan_old = obstacles
-            x_summ += x_scan
-            y_summ += y_scan
-            pose_summ += pose_scan
+            #scan = obstacles
+            #if scan_old == []:
+            #    scan_old = scan
+            #x_scan, y_scan, pose_scan = match_scans(scan, scan_old)
+            #scan_old = obstacles
+            #x_summ += x_scan
+            #y_summ += y_scan
+            #pose_summ += pose_scan
 
             front, left , right = self.bug.analyse(scan_data)
             #steer, speed_korr = self.bug.modus(front, left, right)
-            steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
+            #steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
 
-            #Manuell Steering
-            steer, speed = self.man.getManuellCommand()
-
-            print("Heading:" +str(heading))
-            print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
-            print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
-            print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
+            #print("Heading:" +str(heading))
+            #print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
+            #print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
+            #print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
             print("Current: " + str(current))
-            print("Steer: " + str(steer) + "  Speed_korr: " + str(speed_korr))
-            print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
-            print("Position: " +str(x_scan) + " " + str(y_scan) + " " + str(pose_scan))
+            print("Steer: " + str(steer) + "  Speed_korr: " + str(speed))
+            #print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
+            #print("Position: " +str(x_scan) + " " + str(y_scan) + " " + str(pose_scan))
             #print("Summ: " +str(x_summ) + " " + str(y_summ) + " " + str(pose_summ))
                  
             #avoid_steering, max_left, max_right = self.avoid.get_nearest_obst(x, y, pose, obstacles)
@@ -170,7 +168,9 @@ class Whegs:
             #print("Position: "+ str(x) + " "+ str(y) + " " + str(pose))
             #print("Steer: " +str(steer))
 
-            self.motion.set_motion_ackermann_steering(steer  , min(speed  , 0.8)) 
+            rear_axle_position = self.scanner.servo_pitch.get_analog()
+            self.motion.set_motion_ackermann_steering(steer  , min(speed  , 0.5), rear_axle_position) 
+
             self.pumper.status_led("off")
             sleep(0.2)
             #os.system('clear')
