@@ -62,11 +62,6 @@ class Lidar_LD19:
             scan_cartesian.append([dx, dy])
         return(scan_cartesian)
 
-    def polar_to_kartesian(self, dist, winkel):
-        """returns aus Dist und Winkel Dx,Dy"""
-
-        return(dx,dy)
-
     def CalcLidarData(self, data):
         data = data.replace(' ','')
 

@@ -14,7 +14,7 @@ from Karte import *
 from Bug import *
 from MotorDataLogger import *
 from VisualisationScan import *
-from IterativeScan import *
+from IterativeScan_LD19 import *
 
 class Whegs:
     def __init__(self):
@@ -79,16 +79,16 @@ class Whegs:
                 speed = 0
             elif self.last_action == "right":
                 steer = -1
-                speed = 0.5
+                speed = 1
             elif self.last_action == "left":
                 steer = 1
-                speed = 0.5
+                speed = 1
             elif self.last_action == "back":
                 steer = 0
-                speed = -0.5
+                speed = -1
             elif self.last_action == "forward":
                 steer = 0
-                speed = 0.5
+                speed = 1
             else:
                 steer, speed = self.man.getManuellCommand()
 
@@ -169,8 +169,8 @@ class Whegs:
             #print("Steer: " +str(steer))
 
             rear_axle_position = self.scanner.servo_pitch.get_analog()
-            self.motion.set_motion_ackermann_steering(steer  , min(speed  , 0.5), rear_axle_position) 
-
+            self.motion.set_motion_ackermann_steering(steer, speed * 0.5, rear_axle_position) 
+            #self.motion.set_motion(steer, speed * 0.5) 
             self.pumper.status_led("off")
             sleep(0.2)
             #os.system('clear')

@@ -34,45 +34,37 @@ class Motion():
             self.settings_HL = 1, 1
             self.settings_HR = 1, 1
             rear_axle_setpoint = 0
-        elif steer > 0 and steer < 0.7:    
-            self.settings_VL = 1, 1
-            self.settings_VR = 1 - steer/2, 1
-            self.settings_HL = 1 - steer/2, 1
-            self.settings_HR = 1, 1
-            rear_axle_setpoint = 100
         elif steer >= 0.7:
             self.settings_VL = 1, 1
             self.settings_VR = 1 - steer/2, 1
-            self.settings_HL = 1 - steer/2, 1
+            self.settings_HL = 1 , 1
             self.settings_HR = 1, 1 
             rear_axle_setpoint = 100
-        elif steer < 0 and steer > -0.7:    
-            self.settings_VL = 1 - abs(steer/2), 1
-            self.settings_VR = 1, 1
-            self.settings_HL = 1, 1 
-            self.settings_HR = 1 - abs(steer/2), 1
-            rear_axle_setpoint = -100
         elif steer <= -0.7:
             self.settings_VL = 1 - abs(steer/2), 1
             self.settings_VR = 1, 1
             self.settings_HL = 1, 1
-            self.settings_HR = 1 - abs(steer/2), 1
+            self.settings_HR = 1 , 1
             rear_axle_setpoint = -100
         else:
             print("Error parsing speed Value")
 
         axle_differenz = rear_axle_position - rear_axle_setpoint
+        print("Axle-Diff: " + str(axle_differenz))
 
         motorspeed, direktion = self.settings_HL
-        motorspeed += axle_differenz / 150    
+        if self.speed >= 0:
+            motorspeed += axle_differenz / 150
+        else:
+            motorspeed -= axle_differenz / 150
         self.settings_HL = motorspeed, direktion
 
         motorspeed, direktion = self.settings_HR
-        motorspeed -= axle_differenz / 150   
+        if self.speed >= 0:
+            motorspeed -= axle_differenz / 150   
+        else:
+            motorspeed += axle_differenz / 150 
         self.settings_HR = motorspeed, direktion
-
-        print("Motor Links : " +str(self.settings_HL))
-        print("Motor Rechts: " +str(self.settings_HR))
 
         self.set_motorcontroller_ackermann_steering(self.motor_VL, self.settings_VL)
         self.set_motorcontroller_ackermann_steering(self.motor_VR, self.settings_VR)
@@ -83,8 +75,8 @@ class Motion():
         speed, direction = settings
         speed = speed  * self.speed
         speed  = max(min(1.0, speed), -1)
-        print(motor, speed, direction)
-        if speed < 0:
+        print("Motors-Values: ", speed, direction)
+        if self.speed < 0:
             direction = direction * (-1)
         motor.set_motor(speed, direction)
 
