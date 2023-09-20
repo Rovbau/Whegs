@@ -1,6 +1,7 @@
 #! python
 # -*- coding: utf-8 -*-
 
+from termcolor import colored
 from threading import Thread
 from time import *
 import sys
@@ -21,7 +22,8 @@ class Manuell():
             #comm = getch.getch()
             comm = comm[0]
             #comm = input()
-            print("Taste: "+str(comm))
+            print (colored("Taste: "+str(comm), 'magenta', attrs=["bold"]))
+            #print("Taste: "+str(comm))
 
             if comm == "8":
                 speed=1.0

@@ -6,6 +6,9 @@
 
 from MotorController import *
 from time import *
+from termcolor import colored
+
+
 
 class Motion():
     def __init__(self):
@@ -36,34 +39,37 @@ class Motion():
             rear_axle_setpoint = 0
         elif steer >= 0.7:
             self.settings_VL = 1, 1
-            self.settings_VR = 1 - steer/2, 1
+            self.settings_VR = 1 - steer/1.5, 1
             self.settings_HL = 1 , 1
             self.settings_HR = 1, 1 
-            rear_axle_setpoint = 100
+            rear_axle_setpoint = -150
         elif steer <= -0.7:
-            self.settings_VL = 1 - abs(steer/2), 1
+            self.settings_VL = 1 - abs(steer/1.5), 1
             self.settings_VR = 1, 1
             self.settings_HL = 1, 1
             self.settings_HR = 1 , 1
-            rear_axle_setpoint = -100
+            rear_axle_setpoint = 150
         else:
             print("Error parsing speed Value")
 
-        axle_differenz = rear_axle_position - rear_axle_setpoint
+        axle_differenz = rear_axle_setpoint - rear_axle_position
         print("Axle-Diff: " + str(axle_differenz))
+
+        P_VALUE = 250
 
         motorspeed, direktion = self.settings_HL
         if self.speed >= 0:
-            motorspeed += axle_differenz / 150
+            motorspeed += axle_differenz / P_VALUE
         else:
-            motorspeed -= axle_differenz / 150
+            motorspeed -= axle_differenz / P_VALUE
         self.settings_HL = motorspeed, direktion
 
         motorspeed, direktion = self.settings_HR
         if self.speed >= 0:
-            motorspeed -= axle_differenz / 150   
+            motorspeed -= axle_differenz / P_VALUE   
         else:
-            motorspeed += axle_differenz / 150 
+            motorspeed += axle_differenz / P_VALUE 
+         
         self.settings_HR = motorspeed, direktion
 
         self.set_motorcontroller_ackermann_steering(self.motor_VL, self.settings_VL)
@@ -140,7 +146,7 @@ if __name__ == "__main__":
 
     motion  = Motion()
 
-    motion.set_motion_ackermann_steering(-1, 0.5)
+    motion.set_motion_ackermann_steering(-1, 0.5, 0)
 
     #motion.set_motion(0.6,0.5)
     sleep(5)

@@ -1,5 +1,6 @@
 import time
 import os
+from termcolor import colored
 import atexit
 from Manuell import *
 from Motion import *
@@ -59,6 +60,7 @@ class Whegs:
 
     def run(self):
         motion_error = False
+        loop_time = 0
         scan_old = []
         x_scan, y_scan, pose_scan = 0, 0, 0
         x_summ, y_summ, pose_summ = 0, 0, 0
@@ -169,8 +171,12 @@ class Whegs:
             #print("Steer: " +str(steer))
 
             rear_axle_position = self.scanner.servo_pitch.get_analog()
+            print(str(rear_axle_position) + "AXLE")
             self.motion.set_motion_ackermann_steering(steer, speed * 0.5, rear_axle_position) 
             #self.motion.set_motion(steer, speed * 0.5) 
             self.pumper.status_led("off")
-            sleep(0.2)
+            
+            print (colored('*** Loop time = ' + str(round(time() - loop_time,2)), 'red', attrs=["bold"]))
+            loop_time = time()
+            sleep(0.05)
             #os.system('clear')
