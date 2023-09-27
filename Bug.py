@@ -22,7 +22,8 @@ class Bug():
 
     def analyse(self, scan_data):
         """Analyse Scan an find free space"""
-        last_scan = scan_data[-1]
+        #last_scan = scan_data[-1]
+        last_scan = scan_data
 
         self.front = "free"
         self.left  = "free"

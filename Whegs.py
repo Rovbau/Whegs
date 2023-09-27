@@ -9,6 +9,7 @@ from Avoid import *
 from Planer import *
 from SMBUSBatt import *
 from Scanner3d import *
+from Lidar_LD19 import *
 from Pumper import *
 from threading import Thread
 from Karte import *
@@ -24,6 +25,7 @@ class Whegs:
         self.kompass = Kompass()
         self.batterie = SMBUSBatt()
         self.scanner = Scanner()
+        self.lidar_LD19 = Lidar_LD19()
         self.karte = Karte()
         self.avoid = Avoid()
         self.planer = Planer(self.avoid, self.karte)
@@ -127,13 +129,13 @@ class Whegs:
             self.karte.updateRoboPos(deltaL * (-1), deltaR, heading)
             x, y, pose = self.karte.getRoboPos()
 
-            self.scanner.do_3D_scan(1)         
-            scan_data = self.scanner.get_scan_data()
-            #print(scan_data)
+            #self.scanner.do_3D_scan(1)         
+            #scan_data = self.scanner.get_scan_data()
+
+            scan_data = self.lidar_LD19.get_lidar_data()
 
             self.karte.updateObstacles(scan_data)
             obstacles = self.karte.getObstacles()
-            #print(obstacles)
             
             #self.visualisationScan.search_LSRegression(obstacles)
             self.visualisationScan.draw_scan(obstacles, [x, y, pose] )
@@ -171,7 +173,6 @@ class Whegs:
             #print("Steer: " +str(steer))
 
             rear_axle_position = self.scanner.servo_pitch.get_analog()
-            print(str(rear_axle_position) + "AXLE")
             self.motion.set_motion_ackermann_steering(steer, speed * 0.5, rear_axle_position) 
             #self.motion.set_motion(steer, speed * 0.5) 
             self.pumper.status_led("off")

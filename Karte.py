@@ -21,7 +21,7 @@ class Karte():
     def updateObstacles(self, obstacles):
         """Obstacles werden in Karte eingetragen"""
         self.obstacles_local_xy = []
-        obstacles = obstacles[-1]   #Only last Line in scan
+        #obstacles = obstacles[-1]   #Only last Line in scan
         for element in obstacles:
             dx, dy = self.polar_to_kartesian(element[2], element[1] * (-1 ))  # heading*(-1) mirrors Map
             self.obstacles_local_xy.append([dx, dy])

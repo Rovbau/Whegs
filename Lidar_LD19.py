@@ -84,7 +84,7 @@ class Lidar_LD19:
             dist = (int(data[8+i+2:8+i+4] + data[8+i:8+i+2],16))
             #confidence.append(int(data[8+i+4:8+i+6],16))
             angle = round((math.degrees(circle(angleStep*counter+start_angle)*math.pi/180.0)),1)
-            partial_scan.append([angle, dist])
+            partial_scan.append([0, angle, (dist/10)])    #Scan_data [_heading, angle, dist] // heading not in use
             counter += 1
        
         return (partial_scan)

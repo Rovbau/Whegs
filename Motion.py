@@ -57,20 +57,18 @@ class Motion():
 
         P_VALUE = 250
 
-        motorspeed, direktion = self.settings_HL
-        if self.speed >= 0:
-            motorspeed += axle_differenz / P_VALUE
-        else:
-            motorspeed -= axle_differenz / P_VALUE
-        self.settings_HL = motorspeed, direktion
+        motorspeed_HL, direktion_HL = self.settings_HL
+        motorspeed_HR, direktion_HR = self.settings_HR
 
-        motorspeed, direktion = self.settings_HR
         if self.speed >= 0:
-            motorspeed -= axle_differenz / P_VALUE   
+            motorspeed_HL += axle_differenz / P_VALUE
+            motorspeed_HR -= axle_differenz / P_VALUE
         else:
-            motorspeed += axle_differenz / P_VALUE 
-         
-        self.settings_HR = motorspeed, direktion
+            motorspeed_HL -= axle_differenz / P_VALUE
+            motorspeed_HR += axle_differenz / P_VALUE
+
+        self.settings_HL = motorspeed_HL, direktion_HL
+        self.settings_HR = motorspeed_HR, direktion_HR
 
         self.set_motorcontroller_ackermann_steering(self.motor_VL, self.settings_VL)
         self.set_motorcontroller_ackermann_steering(self.motor_VR, self.settings_VR)
