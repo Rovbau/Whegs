@@ -150,13 +150,13 @@ class Whegs:
             #pose_summ += pose_scan
 
             front, left , right = self.bug.analyse(scan_data)
-            #steer, speed_korr = self.bug.modus(front, left, right)
+            steer, speed_korr = self.bug.modus(front, left, right)
             #steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
 
             #print("Heading:" +str(heading))
-            #print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
-            #print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
-            #print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
+            print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
+            print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
+            print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
             print("Current: " + str(current))
             print("Steer: " + str(steer) + "  Speed_korr: " + str(speed))
             #print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 

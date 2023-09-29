@@ -36,20 +36,19 @@ class Bug():
         for point in last_scan:
             pitch, heading, dist = point
             #Straight +/-15° @ dist = 90 -> 50cm free-space
-            if -10 < heading < 10:
+            if (350 < heading < 360) or (0 < heading < 10) :
                 if dist < self.MIN_DIST:
                     self.front = "blocked"
                     self.speed = self.LOW_SPEED
-                    self.front_min = 0.1 ##min(self.front_min, dist)
-            #Left
-            
-            if -90 < heading < -10:
+                    self.front_min = 0.1 ##min(self.front_min, dist)           
+            #Left           
+            if  (310 < heading) and (heading < 350):
                 if dist < self.MIN_DIST:
                     self.left = "blocked"
                     self.speed = self.LOW_SPEED
                     self.left_min = min(self.left_min, dist)
             #Right
-            if 10 < heading < 90:
+            if (10 < heading) and (heading < 40):
                 if dist < self.MIN_DIST:
                     self.right = "blocked"
                     self.speed = self.LOW_SPEED

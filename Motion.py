@@ -79,7 +79,7 @@ class Motion():
         speed, direction = settings
         speed = speed  * self.speed
         speed  = max(min(1.0, speed), -1)
-        print("Motors-Values: ", speed, direction)
+        #print("Motors-Values: ", speed, direction)
         if self.speed < 0:
             direction = direction * (-1)
         motor.set_motor(speed, direction)

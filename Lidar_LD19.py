@@ -1,3 +1,6 @@
+#
+# the front of the sensor is defined as the zero-degree direction, and the rotation angle increases clockwise to 360grad
+
 import serial
 #import binascii
 from operator import itemgetter
