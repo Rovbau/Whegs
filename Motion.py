@@ -40,20 +40,20 @@ class Motion():
         elif steer >= 0.7:
             self.settings_VL = 1, 1
             self.settings_VR = 1 - steer/1.5, 1
-            self.settings_HL = 1 , 1
+            self.settings_HL = 1, 1
             self.settings_HR = 1, 1 
             rear_axle_setpoint = -150
         elif steer <= -0.7:
             self.settings_VL = 1 - abs(steer/1.5), 1
             self.settings_VR = 1, 1
             self.settings_HL = 1, 1
-            self.settings_HR = 1 , 1
+            self.settings_HR = 1, 1
             rear_axle_setpoint = 150
         else:
             print("Error parsing speed Value")
 
         axle_differenz = rear_axle_setpoint - rear_axle_position
-        print("Axle-Diff: " + str(axle_differenz))
+        print("Axle-diff: " + str(axle_differenz))
 
         P_VALUE = 250
 

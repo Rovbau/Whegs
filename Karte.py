@@ -69,8 +69,8 @@ class Karte():
             self.global_kurs=360-abs(self.global_kurs)            
         global_kurs_radiant=radians(self.global_kurs)
         ## Uncomment following two, if you use Compass ##
-        global_kurs_radiant = radians(KompassCourse)
-        self.global_kurs = degrees(global_kurs_radiant)
+        #global_kurs_radiant = radians(KompassCourse)
+        #self.global_kurs = degrees(global_kurs_radiant)
                          
 
         if deltaL != deltaR:

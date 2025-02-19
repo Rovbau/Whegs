@@ -17,6 +17,8 @@ from Bug import *
 from MotorDataLogger import *
 from VisualisationScan import *
 from IterativeScan_LD19 import *
+from tabulate import tabulate
+from collections import OrderedDict
 
 class Whegs:
     def __init__(self):
@@ -64,6 +66,7 @@ class Whegs:
         motion_error = False
         loop_time = 0
         scan_old = []
+        logging_tabulate = []
         x_scan, y_scan, pose_scan = 0, 0, 0
         x_summ, y_summ, pose_summ = 0, 0, 0
 
@@ -76,6 +79,11 @@ class Whegs:
                 self.motion.set_motion(0,0)
                 steer, speed = self.man.getManuellCommand()
                 self.scanner.scanner_reset()
+                #Logging Table View8
+                
+                with open("logging_tabulate.txt", "w") as logging:
+                    print(tabulate(logging_tabulate, headers="keys", tablefmt="github"), file = logging)
+                    logging.flush()
                 sleep(1)
             
             if self.last_action == "stop":
@@ -129,6 +137,8 @@ class Whegs:
             self.karte.updateRoboPos(deltaL * (-1), deltaR, heading)
             x, y, pose = self.karte.getRoboPos()
 
+            print("X : " + str(x) + "Y : " + str(y) + " Pose : "  + str(pose))
+
             #self.scanner.do_3D_scan(1)         
             #scan_data = self.scanner.get_scan_data()
 
@@ -150,14 +160,13 @@ class Whegs:
             #pose_summ += pose_scan
 
             front, left , right = self.bug.analyse(scan_data)
-            steer, speed_korr = self.bug.modus(front, left, right)
+            #steer, speed_korr = self.bug.modus(front, left, right)
             #steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
-
-            #print("Heading:" +str(heading))
-            print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
-            print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
-            print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
-            print("Current: " + str(current))
+            print("Heading:" +str(heading))
+            #print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
+            #print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
+            #print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
+            #print("Current: " + str(current))
             print("Steer: " + str(steer) + "  Speed_korr: " + str(speed))
             #print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
             #print("Position: " +str(x_scan) + " " + str(y_scan) + " " + str(pose_scan))
@@ -176,8 +185,17 @@ class Whegs:
             self.motion.set_motion_ackermann_steering(steer, speed * 0.5, rear_axle_position) 
             #self.motion.set_motion(steer, speed * 0.5) 
             self.pumper.status_led("off")
-            
+
+            #Logging with tabulate
+            current_time = strftime("%H:%M:%S", localtime())
+            logging_tabulate.append(OrderedDict([("Time",current_time),("steer",steer), ("speed", speed), ("X",x),("Y",y), 
+                                                 ("Pose",pose), ("Axle-Pos",rear_axle_position), ("Current",current)]))
+
+
             print (colored('*** Loop time = ' + str(round(time() - loop_time,2)), 'red', attrs=["bold"]))
             loop_time = time()
             sleep(0.05)
+            print()
+            #print('\033[6F\033[2k', end='')
+
             #os.system('clear')

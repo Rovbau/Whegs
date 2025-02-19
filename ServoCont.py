@@ -45,13 +45,13 @@ if __name__ == "__main__":
 
     servo = Servo()
 
-    servo.set_servo_angle(10)
+    #servo.set_servo_angle(10)
     print("Servo to ...")
-    sleep(3)  
+    #sleep(3)  
     servo.set_servo_angle(0)
     print("Servo to ...")
-    sleep(3)
+    #sleep(3)
 
-    for i in range(10):
+    for i in range(100):
         print("Analog Value from PortA-4: " + str(servo.get_analog()))
-        sleep(0.5)
+        sleep(0.8)

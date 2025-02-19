@@ -2,7 +2,7 @@
 
 class Bug():
     def __init__(self):
-        self.MIN_DIST = 90
+        self.MIN_DIST = 150
         self.front = "free"
         self.left  = "free"
         self.right = "free"
