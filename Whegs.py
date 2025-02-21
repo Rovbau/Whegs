@@ -81,10 +81,10 @@ class Whegs:
                 self.scanner.scanner_reset()
                 #Logging Table View8
                 
-                with open("logging_tabulate.txt", "w") as logging:
+                with open("logging_tabulate.log", "w") as logging:
                     print(tabulate(logging_tabulate, headers="keys", tablefmt="github"), file = logging)
                     logging.flush()
-                sleep(1)
+                sleep(5)
             
             if self.last_action == "stop":
                 steer = 0
@@ -107,7 +107,7 @@ class Whegs:
             if steer == 0 and speed == 0:
                 motion_error = False
             
-            if abs(self.kompass.get_pitch()) > 40 or abs(self.kompass.get_roll()) > 40:
+            if abs(self.kompass.get_pitch()) > 30 or abs(self.kompass.get_roll()) > 30:
                 steer = 0
                 speed = 0
                 motion_error = True
@@ -122,11 +122,6 @@ class Whegs:
                 speed = 0
                 motion_error = True
                 print("CURRENT Error Stopping : " + str(current) + str("mA"))
-
-            if self.scanner.get_min_dist() < 60:
-                self.distance = "TO NARROW MOVE BACKWARTS !"
-            else:
-                self.distance = None
 
             #Store the Motor data for all 4 motors
             #self.motorDataLogger.store(current)
@@ -158,16 +153,16 @@ class Whegs:
             #x_summ += x_scan
             #y_summ += y_scan
             #pose_summ += pose_scan
-
+            
             front, left , right = self.bug.analyse(scan_data)
-            #steer, speed_korr = self.bug.modus(front, left, right)
+            steer, speed_korr = self.bug.modus(front, left, right)
             #steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
             print("Heading:" +str(heading))
-            #print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
-            #print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
-            #print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
+            print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
+            print("Front: " + str(self.bug.front)+ "  Dist: " + str(self.bug.front_min))
+            print("Right: " + str(self.bug.right)+ "  Dist: " + str(self.bug.right_min))
             #print("Current: " + str(current))
-            print("Steer: " + str(steer) + "  Speed_korr: " + str(speed))
+            print("Steer: " + str(steer) + "  Speed: " + str(speed))
             #print("Position: " +str(x) + " " + str(y) + " " + str(pose)) 
             #print("Position: " +str(x_scan) + " " + str(y_scan) + " " + str(pose_scan))
             #print("Summ: " +str(x_summ) + " " + str(y_summ) + " " + str(pose_summ))
@@ -188,14 +183,15 @@ class Whegs:
 
             #Logging with tabulate
             current_time = strftime("%H:%M:%S", localtime())
-            logging_tabulate.append(OrderedDict([("Time",current_time),("steer",steer), ("speed", speed), ("X",x),("Y",y), 
-                                                 ("Pose",pose), ("Axle-Pos",rear_axle_position), ("Current",current)]))
-
+            logging_tabulate.append(OrderedDict([("Time",current_time),
+                                                 ("Steer",steer), ("Speed", speed), 
+                                                 ("Front", front), ("Left", left), ("Right", right),
+                                                 ("X",x),("Y",y), ("Pose",pose), 
+                                                 ("Axle-Pos",rear_axle_position), ("Current",current)]))
 
             print (colored('*** Loop time = ' + str(round(time() - loop_time,2)), 'red', attrs=["bold"]))
             loop_time = time()
             sleep(0.05)
-            print()
-            #print('\033[6F\033[2k', end='')
 
+            #print('\033[9F\033[2k', end='')
             #os.system('clear')

@@ -103,21 +103,21 @@ if __name__ == "__main__":
     motor_HL = MotorController(0x1A)
     motor_HR = MotorController(0x1C)
 
-    for i in range(5):
+    for i in range(10):
         print("Counts VL: " + str(motor_VL.get_counts()))
         print("Counts VR: " + str(motor_VR.get_counts()))
         print("Counts HL: " + str(motor_HL.get_counts()))
         print("Counts HR: " + str(motor_HR.get_counts()))
-        sleep(1)
+        sleep(3)
 
     print("ATTENTION MOTOR IS WORKING... -2 Sec")
     #Go Robo go
-    motor_VL.set_motor(speed = 0.5, direction = -1)   
-    motor_VR.set_motor(speed = 0.5, direction = -1)   
-    motor_HL.set_motor(speed = 0.5, direction = -1)   
-    motor_HR.set_motor(speed = 0.5, direction = -1)
+    motor_VL.set_motor(speed = 0.5, direction = 1)   
+    motor_VR.set_motor(speed = 0.5, direction = 1)   
+    motor_HL.set_motor(speed = 0.5, direction = 1)   
+    motor_HR.set_motor(speed = 0.5, direction = 1)
 
-    sleep(5)
+    sleep(10)
 
     #Stopping @ speed = 0
     motor_VL.set_motor(speed = 0, direction = 1)

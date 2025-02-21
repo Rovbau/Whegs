@@ -2,7 +2,7 @@
 
 class Bug():
     def __init__(self):
-        self.MIN_DIST = 150
+        self.MIN_DIST = 80
         self.front = "free"
         self.left  = "free"
         self.right = "free"
@@ -35,6 +35,7 @@ class Bug():
        
         for point in last_scan:
             pitch, heading, dist = point
+            
             #Straight +/-15° @ dist = 90 -> 50cm free-space
             if (350 < heading < 360) or (0 < heading < 10) :
                 if dist < self.MIN_DIST:
@@ -42,13 +43,13 @@ class Bug():
                     self.speed = self.LOW_SPEED
                     self.front_min = 0.1 ##min(self.front_min, dist)           
             #Left           
-            if  (310 < heading) and (heading < 350):
+            if  (270 < heading) and (heading < 315):
                 if dist < self.MIN_DIST:
                     self.left = "blocked"
                     self.speed = self.LOW_SPEED
                     self.left_min = min(self.left_min, dist)
             #Right
-            if (10 < heading) and (heading < 40):
+            if (45 < heading) and (heading < 90):
                 if dist < self.MIN_DIST:
                     self.right = "blocked"
                     self.speed = self.LOW_SPEED
@@ -88,7 +89,7 @@ class Bug():
         steer = 0
 
         if front == "free" and left == "blocked" and right == "blocked":
-            steer = (self.right_min - self.left_min) * 0.05
+            steer = 1           #(self.right_min - self.left_min) * 0.05
         elif front == "blocked" and left == "free" and right == "free":
             steer = 1
         elif front == "blocked"  and left == "blocked":
@@ -108,7 +109,7 @@ if __name__ == "__main__":
 
     bug = Bug()
 
-    scan_data = [[[0, -90.0, 100], [0, 0.0, 59], [0, 18.2, 59]]]
+    scan_data = [[0, -90.0, 100], [0, 0.0, 59], [0, 18.2, 59]]
     front, left, right = bug.analyse(scan_data)
     steer = bug.modus(front, left, right)
     print(bug.left)

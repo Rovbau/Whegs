@@ -1,14 +1,13 @@
 #! python
 # -*- coding: utf-8 -*-
 # Program steuert Roboter Motion via 4xMotorController
-# Steer Links = +1 Rechts = -1
-# Speed Vor = +1 Retour = -1
+# Steer: Rechts = +1 Links =  -1
+# Speed: Vor =    +1 Retour = -1
+# rear_axle_position Left = 160 Mid = 0 Right = (-160)s
 
 from MotorController import *
 from time import *
 from termcolor import colored
-
-
 
 class Motion():
     def __init__(self):
@@ -53,9 +52,8 @@ class Motion():
             print("Error parsing speed Value")
 
         axle_differenz = rear_axle_setpoint - rear_axle_position
-        print("Axle-diff: " + str(axle_differenz))
 
-        P_VALUE = 250
+        P_VALUE = 200
 
         motorspeed_HL, direktion_HL = self.settings_HL
         motorspeed_HR, direktion_HR = self.settings_HR
@@ -66,6 +64,9 @@ class Motion():
         else:
             motorspeed_HL -= axle_differenz / P_VALUE
             motorspeed_HR += axle_differenz / P_VALUE
+
+        motorspeed_HL = max(min(5.0, motorspeed_HL), 0)
+        motorspeed_HR = max(min(5.0, motorspeed_HR), 0)
 
         self.settings_HL = motorspeed_HL, direktion_HL
         self.settings_HR = motorspeed_HR, direktion_HR
@@ -79,7 +80,7 @@ class Motion():
         speed, direction = settings
         speed = speed  * self.speed
         speed  = max(min(1.0, speed), -1)
-        #print("Motors-Values: ", speed, direction)
+            #print("Motors-Values: ", speed, direction)
         if self.speed < 0:
             direction = direction * (-1)
         motor.set_motor(speed, direction)
