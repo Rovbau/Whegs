@@ -2,7 +2,7 @@
 
 class Bug():
     def __init__(self):
-        self.MIN_DIST = 80
+        self.MIN_DIST = 250
         self.front = "free"
         self.left  = "free"
         self.right = "free"
@@ -28,43 +28,47 @@ class Bug():
         self.front = "free"
         self.left  = "free"
         self.right = "free"
-        self.front_min = 999
-        self.left_min  = 999
-        self.right_min = 999
+        self.front_min = 99999
+        self.left_min  = 99999
+        self.right_min = 99999
         self.speed = 0.5
        
         for point in last_scan:
             pitch, heading, dist = point
             
             #Straight +/-15° @ dist = 90 -> 50cm free-space
-            if (350 < heading < 360) or (0 < heading < 10) :
+            if (340 < heading <= 360) or (0 <= heading < 20) :
                 if dist < self.MIN_DIST:
                     self.front = "blocked"
                     self.speed = self.LOW_SPEED
-                    self.front_min = 0.1 ##min(self.front_min, dist)           
+                    self.front_min = min(self.front_min, dist)       #0.1
             #Left           
-            if  (270 < heading) and (heading < 315):
+            if  (280 < heading) and (heading < 330):
                 if dist < self.MIN_DIST:
                     self.left = "blocked"
                     self.speed = self.LOW_SPEED
                     self.left_min = min(self.left_min, dist)
             #Right
-            if (45 < heading) and (heading < 90):
+            if (30 < heading) and (heading < 80):
                 if dist < self.MIN_DIST:
                     self.right = "blocked"
                     self.speed = self.LOW_SPEED
                     self.right_min = min(self.right_min, dist)
 
         return(self.front, self.left, self.right)
+    
+    def get_minimum_dist(self):
+        return (self.front_min, self.left_min,self.right_min)
+
 
     def modus_sinus(self, front, left, right, heading):
         "avoid obstacles depending on dist to obstacles. and heading to goal"
 
         goal_heading = self.angle_diff(0, heading)
         if goal_heading >= 0:
-            goal_heading = -1
+            self.new_goal = -1
         else:
-            goal_heading = 1
+            self.new_goal = 1
 
         print("goal_heading: " + str(goal_heading))
 
@@ -72,15 +76,24 @@ class Bug():
             lock = False
         else:
             lock = True
-        print("lock = " + str(lock))
 
         if lock == False:
             self.new_goal = goal_heading
             self.goal_heading_old = goal_heading
 
-        print("new_goal: " + str(self.new_goal))
+        #print("new_goal: " + str(self.new_goal))
         #(goal_heading * (-1)/50)
-        steer = ((goal_heading/80) + (1 / self.left_min)  + (-1 / self.right_min) + ((1 / self.front_min) * self.new_goal)) * 50   
+
+        head = (goal_heading/500)
+        min_L = (20 / self.left_min)
+        min_R = (-20 / self.right_min)
+        min_F = (20 / self.front_min)
+
+        print("head:" +str (head))
+        print("min_L:" +str (min_L))
+        print("min_F:" +str (min_F))
+        print("min_R:" +str (min_R))
+        steer = (head + min_L  + min_R + min_F) * 50   
 
         return(round(steer, 2), round(self.speed, 2))
 

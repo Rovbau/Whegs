@@ -153,9 +153,13 @@ class Whegs:
             #x_summ += x_scan
             #y_summ += y_scan
             #pose_summ += pose_scan
-            
+
+            # Bug algorithmus, follows wall until goal is nearer as before
             front, left , right = self.bug.analyse(scan_data)
-            steer, speed_korr = self.bug.modus(front, left, right)
+            min_front, min_left, min_right = self.bug.get_minimum_dist()
+            steer, speed = self.planer.set_modus(x, y, heading, 0, 1, 200/min_front, 100/min_left, 100/min_right, False)
+ 
+            #steer, speed_korr = self.bug.modus(front, left, right)
             #steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
             print("Heading:" +str(heading))
             print("Left : " + str(self.bug.left) + "  Dist: " + str(self.bug.left_min))
@@ -193,5 +197,6 @@ class Whegs:
             loop_time = time()
             sleep(0.05)
 
+8
             #print('\033[9F\033[2k', end='')
             #os.system('clear')
