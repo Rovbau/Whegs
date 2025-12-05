@@ -15,6 +15,7 @@ class MotorController():
         self.CountR = 0
         self.last_time = time()
         self.direction_old = 1
+        self.write_error = False
         
         print("Init MotorController " +str(self.addr))
 
@@ -23,6 +24,10 @@ class MotorController():
         if value > 32767:
             value = (65536 - value) * (-1)
         return(value)
+
+    def get_motor_error(self):
+        """Returns True if write error occured"""
+        return(self.write_error)
 
     def set_motor(self, speed, direction):
         """Set the motor speed and direction via i2c"""
@@ -37,8 +42,10 @@ class MotorController():
             try:
                 bus.write_byte_data(self.addr, int(direction), int(255))
                 sleep(0.05)
+                self.write_error = False
             except:
                 print("Motor " + str(self.addr) + "not ready")
+                self.write_error = True
 
         if direction == 1:
             direction = 127
@@ -48,8 +55,10 @@ class MotorController():
             print("Direction command fault")
         try:
             bus.write_byte_data(self.addr, int(direction), int(speed))
+            self.write_error = False
         except:
             print("Motor " +str(self.addr) + " not ready")
+            self.write_error = True
 
     def get_counts(self):
         """Count pulse from Motor"""

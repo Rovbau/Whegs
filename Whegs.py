@@ -182,6 +182,16 @@ class Whegs:
 
             rear_axle_position = self.scanner.servo_pitch.get_analog()
             self.motion.set_motion_ackermann_steering(steer, speed * 0.5, rear_axle_position) 
+
+            #Stop if I2c failed
+            if self.motion.motor_VL.get_motor_error() or \
+                    self.motion.motor_VR.get_motor_error() or \
+                    self.motion.motor_HL.get_motor_error() or \
+                    self.motion.motor_HR.get_motor_error() or \
+                    self.kompass.kompass_error_i2c:
+                print("MOTION Error detected")
+                self.motion.set_motion(0,0)
+                sleep(5)
             #self.motion.set_motion(steer, speed * 0.5) 
             self.pumper.status_led("off")
 

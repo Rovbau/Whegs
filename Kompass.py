@@ -11,14 +11,20 @@ bus = smbus.SMBus(1)
 class Kompass():
     def __init__ (self):
         self.adresse = 0x61
+        self.kompass_error_i2c = False
+
+    def kompass_error(self):
+        return(self.kompass_error_i2c)
 
     def read_byte(self, register):
         for i in range(2):
             try:
                 data = bus.read_byte_data(self.adresse,register)
+                kompass_error_i2c = False
                 break
             except:
                 print("Kompass not ready")
+                kompass_error_i2c = True
                 data = None
         return(data)
 
@@ -33,7 +39,7 @@ class Kompass():
         try:
             data = self.read_byte(0x05)
         except:
-            print("Kompass not ready")
+            print("Kompass not ready - roll")
             return(None)
         if data > 127:
             data = (255 - data) * (-1)

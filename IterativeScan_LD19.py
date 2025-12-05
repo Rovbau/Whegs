@@ -4,9 +4,9 @@ author: Atsushi Sakai (@Atsushi_twi), Göktuğ Karakaşlı, Shamil Gemuev
 """
 
 import math
-from tkinter.tix import Y_REGION
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
-import matplotlib.pyplot as plt
+#from tkinter.tix import Y_REGION
+#from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
+#import matplotlib.pyplot as plt
 import numpy as np
 from Lidar_LD19 import *
 import os 
