@@ -38,16 +38,23 @@ class Whegs:
         self.last_action = None
         self.distance = None
         self.ThreadEncoder = None
+        self.logging_all_data = {}
         
         atexit.register(self.motion.set_motion, steer = 0, speed = 0)
         atexit.register(self.scanner.scanner_reset)
         atexit.register(self.motorDataLogger.close_file)
+        atexit.register(self.pickle_data, self.logging_all_data)
 
     def init(self):
         self.start = time()
         self.scanner.init_3D_scan(min_pitch = 0,    max_pitch = 0, min_heading = -45.0, max_heading = 45.0,)
         self.ThreadEncoder = Thread(target=self.man.runManuell, args=(), daemon=True)
         self.ThreadEncoder.start()
+
+    def pickle_data(self, dat):
+        with open("logging_scan_file.pkl", "wb") as filing:
+            pickle.dump(dat, filing)    
+
 
     def get_status_data(self):
         return {
@@ -69,6 +76,8 @@ class Whegs:
         logging_tabulate = []
         x_scan, y_scan, pose_scan = 0, 0, 0
         x_summ, y_summ, pose_summ = 0, 0, 0
+        aktual_data_this_loop = {}
+        loop_count = 0
 
         while True:
             self.pumper.status_led("on")
@@ -157,7 +166,7 @@ class Whegs:
             # Bug algorithmus, follows wall until goal is nearer as before
             front, left , right = self.bug.analyse(scan_data)
             min_front, min_left, min_right = self.bug.get_minimum_dist()
-            steer, speed = self.planer.set_modus(x, y, heading, 0, 1, 200/min_front, 100/min_left, 100/min_right, False)
+            #steer, speed = self.planer.set_modus(x, y, heading, 0, 1, 200/min_front, 100/min_left, 100/min_right, False)
  
             #steer, speed_korr = self.bug.modus(front, left, right)
             #steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
@@ -195,6 +204,23 @@ class Whegs:
             #self.motion.set_motion(steer, speed * 0.5) 
             self.pumper.status_led("off")
 
+            #Logging Scan Data while running
+            if speed != 0:
+                loop_count += 1           
+                aktual_data_this_loop = {   "scan_data": scan_data,
+                                            "x": x,
+                                            "y": y,
+                                            "pose": pose,
+                                            "steer": steer,
+                                            "speed": speed,
+                                            "front": front,
+                                            "left": left,
+                                            "right": right
+                                        }
+                #Make new Dict for each loop
+                self.logging_all_data[loop_count] = aktual_data_this_loop
+ 
+
             #Logging with tabulate
             current_time = strftime("%H:%M:%S", localtime())
             logging_tabulate.append(OrderedDict([("Time",current_time),
@@ -207,6 +233,5 @@ class Whegs:
             loop_time = time()
             sleep(0.05)
 
-8
             #print('\033[9F\033[2k', end='')
             #os.system('clear')
