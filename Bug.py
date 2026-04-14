@@ -2,7 +2,7 @@
 
 class Bug():
     def __init__(self):
-        self.MIN_DIST = 250
+        self.MIN_DIST = 150
         self.front = "free"
         self.left  = "free"
         self.right = "free"
@@ -32,6 +32,7 @@ class Bug():
         self.left_min  = 99999
         self.right_min = 99999
         self.speed = 0.5
+        count_min_front = 0
        
         for point in last_scan:
             pitch, heading, dist = point
@@ -39,6 +40,7 @@ class Bug():
             #Straight +/-15° @ dist = 90 -> 50cm free-space
             if (340 < heading <= 360) or (0 <= heading < 20) :
                 if dist < self.MIN_DIST:
+                    count_min_front += 1
                     self.front = "blocked"
                     self.speed = self.LOW_SPEED
                     self.front_min = min(self.front_min, dist)       #0.1
@@ -55,6 +57,7 @@ class Bug():
                     self.speed = self.LOW_SPEED
                     self.right_min = min(self.right_min, dist)
 
+        print("Anzahl Obstacles with min_dist: " + str(count_min_front))
         return(self.front, self.left, self.right)
     
     def get_minimum_dist(self):
@@ -96,27 +99,6 @@ class Bug():
         steer = (head + min_L  + min_R + min_F) * 50   
 
         return(round(steer, 2), round(self.speed, 2))
-
-
-    def modus(self, front, left, right):
-        steer = 0
-
-        if front == "free" and left == "blocked" and right == "blocked":
-            steer = 1           #(self.right_min - self.left_min) * 0.05
-        elif front == "blocked" and left == "free" and right == "free":
-            steer = 1
-        elif front == "blocked"  and left == "blocked":
-            steer = 1
-        elif front == "blocked" and  right == "blocked":
-            steer = -1
-        else:
-            steer = 0
-            print("DECISION NOT DEFINED")
-        return(round(steer, 2), round(self.speed, 2))
-        
-                
-
-
 
 if __name__ == "__main__":
 

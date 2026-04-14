@@ -50,14 +50,14 @@ class Planer():
         elif self.wall_modus == False:
             self.modus_go_to_goal()
         
-        return(self.steering_output, self.speed)
+        return(round(self.steering_output, 2), round(self.speed, 2))
     
     def recovery(self):
         """ Recovery if distances are to close. Backwards until recovery_dist is reached """
         if self.recovery_modus == False:
             self.recovery_modus = True
             self.recovery_position = [self.x, self.y]
-         
+        
         self.steering_output, self.speed = [0, -1]
             
         recovery_dist = self.avoid.distance(self.x, self.y, self.recovery_position[0], self.recovery_position[1])
@@ -96,7 +96,7 @@ class Planer():
     def exit_wall_modus(self):
         """Exit Wall_modus if dist to goal is smaller as before"""
         dist = self.avoid.distance(self.x, self.y, self.goal_position[0], self.goal_position[1])
-        print("Goal is neared as before:" +str(round(self.leaving_track_dist_to_goal - dist, 3)))
+        print("Leaving track to Goal distance: " +str(round(self.leaving_track_dist_to_goal - dist, 3)))
         if self.leaving_track_dist_to_goal - dist > (+0.2):
             return(True)
         else:
@@ -118,11 +118,11 @@ class Planer():
 
         if self.follow_left:
             # Wall is on the right side of the robot
-            print("follow_left")
+            print("Wall_on_the_right")
             self.steering_output = self.fixed_attraction + (self.max_right * (-1)) + (self.avoid_steering * (-1))
         if self.follow_right:
             # Wall is on the left side of the robot
-            print("follow_right")
+            print("Wall_on_the_left")
             self.steering_output = self.fixed_attraction + self.max_left + self.avoid_steering
         if self.exit_wall_modus():
             self.wall_modus = False
