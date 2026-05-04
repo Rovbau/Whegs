@@ -1,8 +1,7 @@
-
+from termcolor import colored
 
 class Bug():
     def __init__(self):
-        self.MIN_DIST = 150
         self.front = "free"
         self.left  = "free"
         self.right = "free"
@@ -20,14 +19,14 @@ class Bug():
             angle = 360 + angle
         return(angle)
 
-    def analyse(self, scan_data):
+    def analyse(self, scan_data, MIN_DETECTION_RANGE = 150):
         """Analyse Scan an find free space"""
         #last_scan = scan_data[-1]
         last_scan = scan_data
 
-        self.front = "free"
-        self.left  = "free"
-        self.right = "free"
+        self.front = 20 * "█"
+        self.left  = 20 * "█"
+        self.right = 20 * "█"
         self.front_min = 99999
         self.left_min  = 99999
         self.right_min = 99999
@@ -39,25 +38,25 @@ class Bug():
             
             #Straight +/-15° @ dist = 90 -> 50cm free-space
             if (340 < heading <= 360) or (0 <= heading < 20) :
-                if dist < self.MIN_DIST:
+                if dist < MIN_DETECTION_RANGE:
                     count_min_front += 1
-                    self.front = "blocked"
                     self.speed = self.LOW_SPEED
                     self.front_min = min(self.front_min, dist)       #0.1
+                    self.front = int(self.front_min / 10) * "█"
             #Left           
             if  (280 < heading) and (heading < 330):
-                if dist < self.MIN_DIST:
-                    self.left = "blocked"
+                if dist < MIN_DETECTION_RANGE:
                     self.speed = self.LOW_SPEED
                     self.left_min = min(self.left_min, dist)
+                    self.left = int(self.left_min / 10) * "█"
             #Right
             if (30 < heading) and (heading < 80):
-                if dist < self.MIN_DIST:
-                    self.right = "blocked"
+                if dist < MIN_DETECTION_RANGE:
                     self.speed = self.LOW_SPEED
                     self.right_min = min(self.right_min, dist)
+                    self.right = int(self.right_min / 10) * "█"
 
-        print("Anzahl Obstacles with min_dist: " + str(count_min_front))
+        print(colored(f"Anzahl Obstacles Front with min_dist: {count_min_front}", "yellow"))
         return(self.front, self.left, self.right)
     
     def get_minimum_dist(self):

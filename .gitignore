@@ -2,3 +2,4 @@
 /venv
 *.log
 *.out
+token.txt

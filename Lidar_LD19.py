@@ -16,9 +16,10 @@ class Lidar_LD19:
         self.distances = list()
         self.full_scan_data = []
     
-    def get_lidar_data(self):
+    def get_lidar_data(self, FILTER_DIST = 300):
         """Gets the data from the LD_19 Lidar, returns 360 scan_datapoins [angle, dist]"""
 
+        self.FILTER_DIST = FILTER_DIST
         loopFlag = True
         flag2c = False
         
@@ -88,7 +89,7 @@ class Lidar_LD19:
             #confidence.append(int(data[8+i+4:8+i+6],16))
             angle = round((math.degrees(circle(angleStep*counter+start_angle)*math.pi/180.0)),1)
             #Skip all Obst. coming from Wheel interference
-            if dist > 300:
+            if dist > self.FILTER_DIST:
                 partial_scan.append([0, angle, (dist/10)])    #Scan_data [_heading, angle, dist] // heading not in use
             counter += 1
        

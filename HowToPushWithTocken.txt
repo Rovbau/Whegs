@@ -1,0 +1,8 @@
+Goto: github.com/settings/tokens
+Generate a Personal access token (classic)
+
+On Raspi:
+git push
+user: rovbau
+add token as password: starts with "ghp_xxxxxxxx...
+

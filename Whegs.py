@@ -141,7 +141,7 @@ class Whegs:
             x, y, pose = self.karte.getRoboPos()
 
             # Get LIDAR data about 450 datapoints per scan
-            scan_data = self.lidar_LD19.get_lidar_data()
+            scan_data = self.lidar_LD19.get_lidar_data(FILTER_DIST = 300)
 
             # Update Map with obstacles
             self.karte.updateObstacles(scan_data)
@@ -152,12 +152,12 @@ class Whegs:
             #self.visualisationScan.draw_scan(obstacles, [x, y, pose] )
 
             # Bug.analyse return Free or Blocked
-            front, left , right = self.bug.analyse(scan_data)
+            front, left , right = self.bug.analyse(scan_data, MIN_DETECTION_RANGE = 120)
             #Bug.getminimum_dist return the minimum distance for front, left and right
             min_front, min_left, min_right = self.bug.get_minimum_dist()
 
             # Set the Robo to state: wall left, wall richt, blocked or go_to_goal
-            steer, speed = self.planer.set_modus(x, y, heading, 0, 1, 200/min_front, 100/min_left, 100/min_right, False)
+            #steer, speed = self.planer.set_modus(x, y, heading, 0, 1, 200/min_front, 100/min_left, 100/min_right, False)
  
             # Bug: avoid obstacles depending on dist to obstacles and heading to goal
             #steer, speed_korr = self.bug.modus_sinus(front, left, right, heading)
@@ -165,9 +165,9 @@ class Whegs:
             # Print Robo Status
             print(colored("Robo-X : " + str(x) + "  Robo-Y : " + str(y) + "  Robo-Pose : "  + str(pose), "green"))
             print(f"Kompass-Heading: {heading}")
-            print(f"Left : {self.bug.left:^10}  Dist: {self.bug.left_min:>10.2f}")
-            print(f"Front: {self.bug.front:^10}  Dist: {self.bug.front_min:>10.2f}")
-            print(f"Right: {self.bug.right:^10}  Dist: {self.bug.right_min:>10.2f}")
+            print(f"Left : {self.bug.left:-<20.20}¦   Dist: {self.bug.left_min:>10.2f}")
+            print(f"Front: {self.bug.front:-<20.20}¦   Dist: {self.bug.front_min:>10.2f}")
+            print(f"Right: {self.bug.right:-<20.20}¦   Dist: {self.bug.right_min:>10.2f}")
 
             print("Steer: " + str(steer) + "  Speed: " + str(speed))
                  
@@ -223,7 +223,7 @@ class Whegs:
             print (colored('*** Loop time = ' + str(round(time() - loop_time,2)) + " ***", 'red', attrs=["bold"]))
             loop_time = time()
             
-            sleep(1.05)
+            sleep(0.05)
 
             #print('\033[9F\033[2k', end='')
             #os.system('clear')
